@@ -9,16 +9,16 @@ class Person:
         if navn==None:
             self.navn = ""
             self.pnr = pnr
-            self.getPerson_db(pnr)
+            self.navn = self.getPerson_db(pnr,"navn")
         else:
             self.navn = navn
             self.pnr = pnr
 
-    def getPerson_db(self,pnr):
+    def getPerson_db(self,pnr,col):
         con = DB.getConnection()
-        dbReq= f"select navn from person where pnr={self.pnr}"
-        navn = con.execute(dbReq).fetchone()[0]
-        self.navn = navn
+        dbReq= f"select {col} from person where pnr={self.pnr}"
+        result = con.execute(dbReq).fetchone()[0]
+        return result
 
     #Vil egentlig legge inn en test for å sjekke om navn og pnr er annerledes enn
     #hva db sier før det gjøres oppdateringer
@@ -47,18 +47,19 @@ class DB(ABC):
 class Treningssenter:
     def __init__(self,id_senter,navn=None):
         if navn == None:
-            self.navn = ""
             self.id_senter = id_senter
-            self.getSenter_db(id_senter)
+            self.navn = self.getColumn_db(id_senter,"navn")
         else:
             self.navn = navn
             self.id_senter = id_senter
 
-    def getSenter_db(self,id_senter):
+    #return colum
+    def getColumn_db(self,id_senter,col):
         con = DB.getConnection()
         c = con.cursor()
-        dbReq = f"SELECT navn FROM person WHERE treningssenter_id={self,id_senter}"
-        self.navn = c.execute(dbReq).fetchone()[0]
+        dbReq = f"SELECT {col} FROM person WHERE treningssenter_id={id_senter}"
+        result = c.execute(dbReq).fetchone()[0]
+        return result
 
     def save(self):
         con1 = DB.getConnection()
@@ -67,6 +68,7 @@ class Treningssenter:
         con.execute(dbReq)
         con1.commit()
         con1.close()
+
 
 if __name__=="__main__":
     test = Treningssenter(143,"3t")
