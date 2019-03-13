@@ -1,3 +1,14 @@
+DROP TABLE treningssenter;
+DROP TABLE person;
+DROP TABLE person_uten_apparat;
+DROP TABLE ovelsegruppe;
+DROP TABLE ovelse;
+DROP TABLE apparat;
+DROP TABLE ovelse_treningsokt;
+DROP TABLE ovelse_pa_apparat;
+DROP TABLE ovelse_i_ovelsegruppe;
+DROP TABLE treningsokt;
+
 create table treningssenter(
     id INTEGER NOT NULL,
     navn varchar(255),
