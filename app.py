@@ -43,16 +43,33 @@ class DB(ABC):
             raise Exception("Could not find database file")
         return conn
 
+
+class Treningssenter:
+    def __init__(self,id_senter,navn=None):
+        if navn == None:
+            self.navn = ""
+            self.id_senter = id_senter
+            self.getSenter_db(id_senter)
+        else:
+            self.navn = navn
+            self.id_senter = id_senter
+
+    def getSenter_db(self,id_senter):
+        con = DB.getConnection()
+        c = con.cursor()
+        dbReq = f"SELECT navn FROM person WHERE treningssenter_id={self,id_senter}"
+        self.navn = c.execute(dbReq).fetchone()[0]
+
+    def save(self):
+        con1 = DB.getConnection()
+        con = con1.cursor()
+        dbReq = f"INSERT INTO person (navn,pnr) VALUES ('{self.navn}',{self.id_senter});"
+        con.execute(dbReq)
+        con1.commit()
+        con1.close()
+
 if __name__=="__main__":
-    test = Person(143)
+    test = Treningssenter(143,"3t")
+    test.save()
     print(test.navn)
-
-
-
-
-
-
-
-
-
 
