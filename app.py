@@ -4,6 +4,7 @@ import sqlite3
 TRENINGDB = "trening3.db"
 
 class Person:
+    #legger til person i databasen hvis du gir navn og pnr, henter fra db hvis du kun gir pnr
     def __init__(self, pnr, navn=None):
         if navn==None:
             self.navn = ""
@@ -19,17 +20,20 @@ class Person:
         navn = con.execute(dbReq).fetchone()[0]
         self.navn = navn
 
+    #Vil egentlig legge inn en test for å sjekke om navn og pnr er annerledes enn
+    #hva db sier før det gjøres oppdateringer
     def save(self):
         con1 = DB.getConnection()
         con = con1.cursor()
-#        dbReq = f"SELECT navn,pnr FROM person WHERE pnr={self.pn}"
-#        navn,pnr = con.execute(dbReq).fetchone()
         dbReq = f"INSERT INTO person (navn,pnr) VALUES ('{self.navn}',{self.pnr});"
         con.execute(dbReq)
         con1.commit()
         con1.close()
 
+#generell DB klasse, kan sikkert brukes til veldig generelle kall
+#nå blir det nesten som at klassene i python speilier tabeller i db, litt usikker på hva som er ideelt
 class DB(ABC):
+
     @abstractmethod
     def getConnection():
         try:
