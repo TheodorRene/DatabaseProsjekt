@@ -43,6 +43,30 @@ class DB(ABC):
             raise Exception("Could not find database file")
         return conn
 
+    @abstractmethod
+    def getCol_db(table, pk, *args):
+        #get db
+        con = DB.getConnection()
+        c = con.cursor()
+
+        #lag comma seperated values from args
+        arguments = ""
+        for num,el in enumerate(args):
+            if (num != (len(args)-1)):
+                arguments += " " + el + ","
+            else:
+                arguments += el
+
+        dbReq = f"SELECT {arguments} FROM {table} WHERE {table}_id={pk};"
+
+        result = c.execute(dbReq).fetchone()
+        c.close()
+        return result
+
+    def insertRow_db(table):
+        dbReq = f"INSERT INTO {table} VALUES ({val});"
+
+
 
 class Treningssenter:
     def __init__(self,id_senter,navn=None):
