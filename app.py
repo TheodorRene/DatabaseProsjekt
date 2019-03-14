@@ -60,11 +60,21 @@ class DB(ABC):
         dbReq = f"SELECT {arguments} FROM {table} WHERE {table}_id={pk};"
 
         result = c.execute(dbReq).fetchone()
-        c.close()
+        con.close()
         return result
 
     def insertRow_db(table):
         dbReq = f"INSERT INTO {table} VALUES ({val});"
+
+    #Retrieve N treningsokter from DB. only PK here
+    @abstractmethod
+    def getNOkter(n):
+        con = DB.getConnection()
+        c = con.cursor()
+        dbReq = f"SELECT treningsokt_id FROM treningsokt ORDER BY dato LIMIT {n};"
+        result = [el[0] for el in c.execute(dbReq).fetchall()]
+        con.close()
+        return result
 
 
 

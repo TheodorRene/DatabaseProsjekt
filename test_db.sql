@@ -16,5 +16,5 @@ INSERT INTO ovelse VALUES (1,"hmm");
 INSERT INTO ovelse VALUES (2,"hmm1");
 INSERT INTO ovelse VALUES (3,"hmm2");
 
-INSERT INTO treningsokt VALUES (1, "1997-22-04",50, "oppe og nicker", 5, 3,1);
-INSERT INTO treningsokt VALUES (2, "1998-20-05",55, "oppe og nicker", 6, 1,2);
+INSERT INTO treningsokt VALUES (1, "1997-22-04",50, 5, 5, 3,1);
+INSERT INTO treningsokt VALUES (2, "1998-20-05",55, 3, 6, 1,2);

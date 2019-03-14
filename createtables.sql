@@ -79,9 +79,9 @@ create table ovelse_i_ovelsegruppe(
 
 CREATE TABLE treningsokt(
     treningsokt_id INTEGER NOT NULL,
-    dato varchar(255), 
+    dato DATE, 
     varighet INTEGER,
-    personlig_form varchar(255),
+    personlig_form INTEGER check (personlig_form between 0 and 10),
     prestasjon INTEGER check (prestasjon between 0 and 10),
     senter_id INTEGER NOT NULL,
     pnr INTEGER NOT NULL,
