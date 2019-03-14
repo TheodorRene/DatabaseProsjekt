@@ -2,23 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from okt import treningsokt
 
+#viktig
 root = tk.Tk()
 
-w = tk.Label(root,text="Hello tkinter")
-
-t = True
-
-def showSomething():
-    global t
-    t = not t
-    if t:
-        w.config(text="you pressed button")
-    else:
-        w.config(text="you pressed nothing")
-
-button = tk.Button(root, text='Show trening', width=25, command=showSomething)
-
-
+#lister for å holde litt kontroll på alle widgetsene og entry
 widgets = []
 ent = []
 num_values = [1,2,3,4,5,6,7,8,9,10]
@@ -67,11 +54,12 @@ ent.append(t_pnr_ent)
 
 
 def into_db():
-    #anbefaler å prøve å forstå linjen under, meget fornøyd
+    #anbefaler å prøve å forstå linjen under, meget fornøyd med den hehe
     okt = treningsokt(*[el.get() for el in ent])
     okt.save()
 
 
+#button
 but = tk.Button(root, text='Add to database', width=25, command=into_db)
 widgets.append(but)
 
@@ -80,5 +68,6 @@ for el in widgets:
     el.pack()
 
 
+#viktig mainloop
 root.mainloop()
 
