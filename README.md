@@ -21,8 +21,11 @@ Begge sql filene må kjøres først for å initalisere prosjektet.
 For øyeblikket er navnet på databasen hardkodet i prosjektet under konstanten
 TRENINGSDB, så gjerne lag en db fil som heter "trening3.db"
 
-App.py er der jeg har startet, gui_test.py er kun testing av Tkinter
-Har nå mulighet legge inn person i databasen og finne person fra personnr i databasen. 
+App.py og okt.py  er der jeg har startet 
+Kjør gui_test.py for å se GUI
+```bash
+pyhon3 gui_test.py
+```
 
 Ideen vil være å gi kun  primary key hentes objektet fra databasen, med ekstra
 argumenter lages det et entry i databasen.
