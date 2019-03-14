@@ -27,3 +27,5 @@ Har nå mulighet legge inn person i databasen og finne person fra personnr i dat
 Ideen vil være å gi kun  primary key hentes objektet fra databasen, med ekstra
 argumenter lages det et entry i databasen.
 
+DB klassen vil ha mange abstrakte funksjoner
+
