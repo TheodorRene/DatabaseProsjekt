@@ -9,8 +9,8 @@ class treningsokt:
             =\
             DB.getCol_db("treningsokt",treningsokt_id,"dato","varighet","personlig_form","prestasjon","senter_id","pnr")
         else:
-            self.treningsokt_id, self.dato, self.varighet = treningsokt_id, dato, varighet
-            self.personlig_form, self.prestasjon, self.senter_id, self.pnr  = prestasjon, senter_id, personlig_form, pnr
+            self.treningsokt_id, self.dato, self.varighet = treningsokt_id, dato, int(varighet)
+            self.personlig_form, self.prestasjon, self.senter_id, self.pnr  = int(prestasjon), int(senter_id), int(personlig_form), int(pnr)
 
 
     def save(self):
@@ -18,7 +18,7 @@ class treningsokt:
         c = con.cursor()
 
         dbReq = f"INSERT INTO treningsokt VALUES (" +\
-        f"{self.treningsokt_id}, '{self.dato}', '{self.varighet}', '{self.personlig_form}', '{self.prestasjon}','{self.senter_id}','{self.pnr}')"
+        f"{self.treningsokt_id}, '{self.dato}', {self.varighet}, {self.personlig_form}, {self.prestasjon}, {self.senter_id}, {self.pnr})"
 
         c.execute(dbReq)
         con.commit()
