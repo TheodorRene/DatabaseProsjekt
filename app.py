@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 import sqlite3
-
 TRENINGDB = "trening3.db"
 
+
 class Person:
-    #legger til person i databasen hvis du gir navn og pnr, henter fra db hvis du kun gir pnr
+    # legger til person i databasen hvis du gir navn og pnr, henter fra db hvis du kun gir pnr
     def __init__(self, pnr, navn=None):
         self.pnr = pnr
         self.navn = navn if navn else self.get_person_db("navn")
@@ -15,8 +15,8 @@ class Person:
         result = con.execute(db_req).fetchone()[0]
         return result
 
-    #Vil egentlig legge inn en test for å sjekke om navn og pnr er annerledes enn
-    #hva db sier før det gjøres oppdateringer
+    # Vil egentlig legge inn en test for å sjekke om navn og pnr er annerledes enn
+    # hva db sier før det gjøres oppdateringer
     def save(self):
         con = DB.getConnection()
         cursor = con.cursor()
@@ -25,8 +25,8 @@ class Person:
         con.commit()
         con.close()
 
-#generell DB klasse, kan sikkert brukes til veldig generelle kall
-#nå blir det nesten som at klassene i python speilier tabeller i db, litt usikker på hva som er ideelt
+# generell DB klasse, kan sikkert brukes til veldig generelle kall
+# nå blir det nesten som at klassene i python speilier tabeller i db, litt usikker på hva som er ideelt
 class DB(ABC):
 
     @abstractmethod
@@ -61,7 +61,7 @@ class DB(ABC):
     def insertRow_db(table):
         dbReq = f"INSERT INTO {table} VALUES ({val});"
 
-    #Retrieve N treningsokter from DB. only PK here
+    # Retrieve N treningsokter from DB. only PK here
     @abstractmethod
     def get_n_okter(n):
         con = DB.get_connection()
@@ -78,7 +78,7 @@ class Treningssenter:
         self.navn = navn if navn else self.get_column_db(id_senter, "navn")
 
 
-    #return column
+    # return column
     def get_column_db(self, id_senter, col):
         con = DB.get_connection()
         cursor = con.cursor()
@@ -89,8 +89,8 @@ class Treningssenter:
     def save(self):
         con = DB.getConnection()
         cursor = con.cursor()
-        dbReq = f"INSERT INTO person (navn,pnr) VALUES ('{self.navn}',{self.id_senter});"
-        cursor.execute(dbReq)
+        db_req = f"INSERT INTO person (navn,pnr) VALUES ('{self.navn}',{self.id_senter});"
+        cursor.execute(db_req)
         con.commit()
         con.close()
 
