@@ -1,5 +1,5 @@
-from app import DB
-class treningsokt:
+from database import DB
+class Treningsokt:
 
     def __init__(self, treningsokt_id,
                  dato=None, varighet=None,
