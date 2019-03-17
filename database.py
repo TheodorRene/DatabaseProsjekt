@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import sqlite3
-TRENINGDB = "trening3.db"
+TRENINGDB = "trening.db"
 
 
 # generell DB klasse, kan sikkert brukes til veldig generelle kall
