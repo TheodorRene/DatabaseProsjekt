@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from okt import treningsokt
+from tables.Treningsokt import Treningsokt
 
 #viktig
 root = tk.Tk()
@@ -47,7 +47,7 @@ widgets.extend([t_senter_id,t_senter_id_ent])
 ent.append(t_senter_id_ent)
 
 #pnr
-t_pnr = tk.Label(root, text="Person nummer")
+t_pnr = tk.Label(root, text="Person.py nummer")
 t_pnr_ent = tk.Entry(root)
 widgets.extend([t_pnr,t_pnr_ent])
 ent.append(t_pnr_ent)
@@ -55,7 +55,7 @@ ent.append(t_pnr_ent)
 
 def into_db():
     #anbefaler å prøve å forstå linjen under, meget fornøyd med den hehe
-    okt = treningsokt(*[el.get() for el in ent])
+    okt = Treningsokt(*[el.get() for el in ent])
     okt.save()
 
 
@@ -70,4 +70,6 @@ for el in widgets:
 
 #viktig mainloop
 root.mainloop()
+
+
 

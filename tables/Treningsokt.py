@@ -1,4 +1,4 @@
-from app import DB
+from database import DB
 class Treningsokt:
 
     def __init__(self, treningsokt_id,
