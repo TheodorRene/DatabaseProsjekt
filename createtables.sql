@@ -98,6 +98,7 @@ CREATE TABLE treningsokt(
     prestasjon INTEGER check (prestasjon between 0 and 10),
     senter_id INTEGER NOT NULL,
     pnr INTEGER NOT NULL,
+    PRIMARY KEY (treningsokt_id),
     FOREIGN KEY (senter_id) REFERENCES treningssenter(treningssenter_id)
         ON UPDATE CASCADE,
     FOREIGN KEY (pnr) REFERENCES person(pnr)
