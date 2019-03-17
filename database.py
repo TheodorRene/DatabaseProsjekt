@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from tables import *
 import sqlite3
 TRENINGDB = "trening.db"
 

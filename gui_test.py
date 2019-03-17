@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from tables.Treningsokt import Treningsokt
+from tables import *
 
 #viktig
 root = tk.Tk()
