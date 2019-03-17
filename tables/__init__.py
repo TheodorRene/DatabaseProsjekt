@@ -1,3 +1,4 @@
-from .Person import Person
-from .Treningssenter import Treningssenter
-from .Treningsokt import Treningsokt
+from .person import Person
+from .treningssenter import Treningssenter
+from .treningsokt import Treningsokt
+from .ovelse import Ovelse
