@@ -2,74 +2,104 @@ import tkinter as tk
 from tkinter import ttk
 from tables import *
 
-#viktig
-root = tk.Tk()
+class main(tk.Tk):
+    def __init(self,*args,**kwargs):
+        tk.TK.__init__(self,*args,**kwargs)
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand = True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+        self.frames = {}
+        for F in (LandingPage, Treningsokt_page):
+            frame = F(containger,self)
+            self.frames[F] = frame
+        self.show_frame(LandingPage)
 
-#lister for å holde litt kontroll på alle widgetsene og entry
-widgets = []
-ent = []
-num_values = [1,2,3,4,5,6,7,8,9,10]
+    def show_frame(self, cont):
+        fram = self.frames[cont]
+        fram.tkraise()
 
-#trenings_id
-t_id = tk.Label(root, text="Treningsøkt id")
-t_id_ent = tk.Entry(root)
-widgets.extend([t_id,t_id_ent])
-ent.append(t_id_ent)
+class LandingPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
 
-#dato
-t_dato = tk.Label(root, text="Dato (YYYY-MM-DD")
-t_dato_ent = tk.Entry(root)
-widgets.extend([t_dato,t_dato_ent])
-ent.append(t_dato_ent)
+        label = tk.Label(self, text="Start Page", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
 
-#varighet
-t_varighet = tk.Label(root, text="Varighet")
-t_varighet_ent = tk.Entry(root)
-widgets.extend([t_varighet,t_varighet_ent])
-ent.append(t_varighet_ent)
+        button = tk.Button(self, text="Visit Page 1", command=lambda: controller.show_frame(treningsokt_page))
+        button.pack()
 
-#personlig form
-t_form = tk.Label(root, text="Personlig form")
-t_form_ent = ttk.Combobox(root,values = num_values)
-widgets.extend([t_form,t_form_ent])
-ent.append(t_form_ent)
-
-#personlig prestasjon
-t_prestasjon = tk.Label(root, text="Prestasjon")
-t_prestasjon_ent = ttk.Combobox(root,values = num_values)
-widgets.extend([t_prestasjon,t_prestasjon_ent])
-ent.append(t_prestasjon_ent)
-
-#senter_id
-t_senter_id = tk.Label(root, text="Senter id")
-t_senter_id_ent = tk.Entry(root)
-widgets.extend([t_senter_id,t_senter_id_ent])
-ent.append(t_senter_id_ent)
-
-#pnr
-t_pnr = tk.Label(root, text="Person nummer")
-t_pnr_ent = tk.Entry(root)
-widgets.extend([t_pnr,t_pnr_ent])
-ent.append(t_pnr_ent)
+        button2 = tk.Button(self, text="Visit Page 2",command=lambda: controller.show_frame(treningsokt_page))
+        button2.pack()
 
 
-def into_db():
-    #anbefaler å prøve å forstå linjen under, meget fornøyd med den hehe
-    okt = Treningsokt(*[el.get() for el in ent])
-    okt.save()
+
+class Treningsokt_page(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.widgets = []
+        self.ent = []
+        self.num_values = [1,2,3,4,5,6,7,8,9,10]
+
+        #trenings_id
+        t_id = tk.Label(self, text="Treningsøkt id")
+        t_id_ent = tk.Entry(self)
+        widgets.extend([t_id,t_id_ent])
+        ent.append(t_id_ent)
+
+        #dato
+        t_dato = tk.Label(self, text="Dato (YYYY-MM-DD")
+        t_dato_ent = tk.Entry(self)
+        widgets.extend([t_dato,t_dato_ent])
+        ent.append(t_dato_ent)
+
+        #varighet
+        t_varighet = tk.Label(self, text="Varighet")
+        t_varighet_ent = tk.Entry(self)
+        widgets.extend([t_varighet,t_varighet_ent])
+        ent.append(t_varighet_ent)
+
+        #personlig form
+        t_form = tk.Label(self, text="Personlig form")
+        t_form_ent = ttk.Combobox(self,values = num_values)
+        widgets.extend([t_form,t_form_ent])
+        ent.append(t_form_ent)
+
+        #personlig prestasjon
+        t_prestasjon = tk.Label(self, text="Prestasjon")
+        t_prestasjon_ent = ttk.Combobox(self,values = num_values)
+        widgets.extend([t_prestasjon,t_prestasjon_ent])
+        ent.append(t_prestasjon_ent)
+
+        #senter_id
+        t_senter_id = tk.Label(self, text="Senter id")
+        t_senter_id_ent = tk.Entry(self)
+        widgets.extend([t_senter_id,t_senter_id_ent])
+        ent.append(t_senter_id_ent)
+
+        #pnr
+        t_pnr = tk.Label(self, text="Person nummer")
+        t_pnr_ent = tk.Entry(self)
+        widgets.extend([t_pnr,t_pnr_ent])
+        ent.append(t_pnr_ent)
+
+        #forteller tkinter at den skal legge på plass alle objektene våre
+        for el in widgets:
+            el.pack()
+        #button
+        but = tk.Button(self, text='Add to database', width=25, command=self.into_db)
+        widgets.append(but)
 
 
-#button
-but = tk.Button(root, text='Add to database', width=25, command=into_db)
-widgets.append(but)
-
-#forteller tkinter at den skal legge på plass alle objektene våre
-for el in widgets:
-    el.pack()
+    def into_db():
+        #anbefaler å prøve å forstå linjen under, meget fornøyd med den hehe
+        okt = Treningsokt(*[el.get() for el in ent])
+        okt.save()
 
 
 #viktig mainloop
-root.mainloop()
+app = main()
+app.mainloop()
 
 
 
