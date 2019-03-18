@@ -47,7 +47,7 @@ widgets.extend([t_senter_id,t_senter_id_ent])
 ent.append(t_senter_id_ent)
 
 #pnr
-t_pnr = tk.Label(root, text="Person.py nummer")
+t_pnr = tk.Label(root, text="Person nummer")
 t_pnr_ent = tk.Entry(root)
 widgets.extend([t_pnr,t_pnr_ent])
 ent.append(t_pnr_ent)
