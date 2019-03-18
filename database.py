@@ -50,8 +50,17 @@ class DB(ABC):
         con.close()
         return result
 
+    @abstractmethod
+    # returnerer objektet med gitt pk dersom det finnes, returnerer None ellers
+    def instance_exists(table, pk):
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req = f"SELECT * FROM {table} WHERE {table}_id={pk}"
+        result = cursor.execute(db_req).fetchone()
+        return result
+
+
+
 if __name__=="__main__":
-    test = Treningssenter(143, "3t")
-    test.save()
-    print(test.navn)
+    print(DB.instance_exists("treningssenter",6))
 
