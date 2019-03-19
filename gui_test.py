@@ -13,7 +13,8 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        for F in (LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage):
+        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage]
+        for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
             frame.grid(row=0,column=0,sticky="nsew")
@@ -37,6 +38,8 @@ class LandingPage(tk.Frame):
         button2 = tk.Button(self, text="Treningsøkter",command=lambda: controller.show_frame(Last_N_TrainingExercisesPage))
         button2.pack()
 
+        button3 = tk.Button(self, text="Apparater",command=lambda: controller.show_frame(ApparatPage))
+        button3.pack()
 
 
 class Treningsokt_page(tk.Frame):
@@ -143,6 +146,45 @@ class Last_N_TrainingExercisesPage(tk.Frame):
             string += f"Dato: {liste[0]}\nVarighet: {liste[1]}\nPersonlig form:{liste[2]}\nPrestasjon:{liste[3]}\nTreningssenter: {liste[4]}\n"
         self.results.config(text=string)
 
+
+class ApparatPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.widgets = []
+        self.ent = []
+
+        self.title = tk.Label(self, text="Legg til apparat")
+        self.widgets.append(self.title)
+
+        ap_id = tk.Label(self, text="Apparat id")
+        ap_id_ent = tk.Entry(self)
+        self.widgets.extend([ap_id, ap_id_ent])
+        self.ent.append(ap_id_ent)
+
+        ap_navn = tk.Label(self, text="Navn")
+        ap_navn_ent = tk.Entry(self)
+        self.widgets.extend([ap_navn, ap_navn_ent])
+        self.ent.append(ap_navn_ent)
+
+        ap_beskrivelse = tk.Label(self, text="Beskrivelse")
+        ap_beskrivelse_ent = tk.Entry(self)
+        self.widgets.extend([ap_beskrivelse, ap_beskrivelse_ent])
+        self.ent.append(ap_beskrivelse_ent)
+
+        for el in self.widgets:
+            el.pack()
+
+        button = tk.Button(self, text="Legg til i database", command=self.into_db)
+        button.pack()
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        home_button.pack()
+
+    def into_db(self):
+        okt = Apparat(*[el.get() for el in self.ent])
+        okt.save()
+        self.title.config(text="Databasen har blitt oppdatert")
+        func = [el.delete(0,"end") for el in self.ent]
 
 
 #viktig mainloop
