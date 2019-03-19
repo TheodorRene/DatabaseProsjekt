@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import tkinter as tk
 from tkinter import ttk
 from tables import *
@@ -130,8 +131,9 @@ class Last_N_TrainingExercisesPage(tk.Frame):
         self.num_ent = ttk.Combobox(self,values = self.num_values)
         self.num_ent.pack()
 
-        self.pnr_ent = tk.Entry(self)
-        self.pnr_ent.pack()
+        #Nødvendig hvis vi må forholde oss til en person
+        #self.pnr_ent = tk.Entry(self)
+        #self.pnr_ent.pack()
 
     def getExercises(self):
         el = DB.get_n_okter(int(self.num_ent.get()))

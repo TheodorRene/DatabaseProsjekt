@@ -8,6 +8,7 @@ DROP TABLE ovelse_treningsokt;
 DROP TABLE ovelse_pa_apparat;
 DROP TABLE ovelse_i_ovelsegruppe;
 DROP TABLE treningsokt;
+DROP TABLE apparat_ovelse_relasjon;
 
 create table treningssenter(
     treningssenter_id INTEGER NOT NULL,
@@ -77,8 +78,7 @@ create table apparat_ovelse_relasjon(
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (apparat_id) REFERENCES apparat(apparat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
-
-)
+);
 
 create table ovelse_i_ovelsegruppe(
     ovelse_id INTEGER NOT NULL,
