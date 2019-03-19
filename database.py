@@ -40,13 +40,13 @@ class DB(ABC):
     def insertRow_db(table):
         dbReq = f"INSERT INTO {table} VALUES ({val});"
 
-    # Retrieve N treningsokter from DB. only PK here
+    # Retrieve N treningsokter from DB. 
     @abstractmethod
     def get_n_okter(n):
         con = DB.get_connection()
         cursor = con.cursor()
-        db_req = f"SELECT treningsokt_id FROM treningsokt ORDER BY dato LIMIT {n};"
-        result = [el[0] for el in cursor.execute(db_req).fetchall()]
+        db_req = f"SELECT dato,varighet,personlig_form,prestasjon,navn FROM treningsokt NATURAL JOIN treningssenter ORDER BY dato DESC LIMIT {n} ;"
+        result = cursor.execute(db_req).fetchall()
         con.close()
         return result
 

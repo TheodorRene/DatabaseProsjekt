@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tables import *
+from database import DB
 
 #https://pythonprogramming.net/change-show-new-frame-tkinter/
 class main(tk.Tk):
@@ -11,7 +12,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        for F in (LandingPage, Treningsokt_page):
+        for F in (LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage):
             frame = F(container,self)
             self.frames[F] = frame
             frame.grid(row=0,column=0,sticky="nsew")
@@ -26,13 +27,13 @@ class LandingPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
 
-        label = tk.Label(self, text="Start Page")
+        label = tk.Label(self, text="Exersiceboi")
         label.pack(pady=10,padx=10)
 
-        button = tk.Button(self, text="Visit Page 1", command=lambda: controller.show_frame(Treningsokt_page))
+        button = tk.Button(self, text="Ny treningsøkt", command=lambda: controller.show_frame(Treningsokt_page))
         button.pack()
 
-        button2 = tk.Button(self, text="Visit Page 2",command=lambda: controller.show_frame(Treningsokt_page))
+        button2 = tk.Button(self, text="Treningsøkter",command=lambda: controller.show_frame(Last_N_TrainingExercisesPage))
         button2.pack()
 
 
@@ -43,6 +44,9 @@ class Treningsokt_page(tk.Frame):
         self.widgets = []
         self.ent = []
         self.num_values = [1,2,3,4,5,6,7,8,9,10]
+
+        self.title = tk.Label(self, text="Legg til treningsøkt")
+        self.widgets.append(self.title)
 
         #trenings_id
         t_id = tk.Label(self, text="Treningsøkt id")
@@ -75,29 +79,68 @@ class Treningsokt_page(tk.Frame):
         self.ent.append(t_prestasjon_ent)
 
         #senter_id
+        #Dette kan jo hentes fra databasen el[0] for el in con.execute(SELECT navn FROM treningsenter).fetchall();
         t_senter_id = tk.Label(self, text="Senter id")
         t_senter_id_ent = tk.Entry(self)
         self.widgets.extend([t_senter_id,t_senter_id_ent])
         self.ent.append(t_senter_id_ent)
 
         #pnr
-        t_pnr = tk.Label(self, text="Person nummer")
+        t_pnr = tk.Label(self, text="Personnummer")
         t_pnr_ent = tk.Entry(self)
         self.widgets.extend([t_pnr,t_pnr_ent])
         self.ent.append(t_pnr_ent)
+
+        but = tk.Button(self, text='Legg til i database', width=25, command=self.into_db)
+        self.widgets.append(but)
 
         #forteller tkinter at den skal legge på plass alle objektene våre
         for el in self.widgets:
             el.pack()
         #button
-        but = tk.Button(self, text='Add to database', width=25, command=self.into_db)
-        self.widgets.append(but)
+
+        home_button = tk.Button(self, text="Gå tilbake", command=lambda: controller.show_frame(LandingPage))
+        home_button.pack()
 
 
-    def into_db():
+    def into_db(self):
         #anbefaler å prøve å forstå linjen under, meget fornøyd med den hehe
         okt = Treningsokt(*[el.get() for el in self.ent])
         okt.save()
+        self.title.config(text="Databasen har blitt oppdatert")
+
+
+class Last_N_TrainingExercisesPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.num_values = [1,2,3,4,5,6,7,8,9,10]
+
+        label = tk.Label(self, text="Dine siste øvelser")
+        label.pack(pady=10,padx=10)
+
+        self.results = tk.Label(self, text="-------------------")
+        self.results.pack(pady=10,padx=10)
+
+        button = tk.Button(self, text="Hent fra database", command=self.getExercises)
+        button.pack()
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        home_button.pack()
+
+        self.num_ent = ttk.Combobox(self,values = self.num_values)
+        self.num_ent.pack()
+
+        self.pnr_ent = tk.Entry(self)
+        self.pnr_ent.pack()
+
+    def getExercises(self):
+        el = DB.get_n_okter(int(self.num_ent.get()))
+        string=""
+        for liste in el:
+            string += "----------------\n"
+            string += f"Dato: {liste[0]}\nVarighet: {liste[1]}\nPersonlig form:{liste[2]}\nPrestasjon:{liste[3]}\nTreningssenter: {liste[4]}\n"
+        self.results.config(text=string)
+
 
 
 #viktig mainloop
