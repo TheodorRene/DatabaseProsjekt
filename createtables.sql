@@ -46,8 +46,7 @@ create table apparat(
     apparat_id INTEGER NOT NULL,
     navn varchar(255),
     beskrivelse varchar(255),
-    PRIMARY KEY(apparat_id),
-    FOREIGN KEY(apparat_id) REFERENCES apparat_ovelse_relasjon(apparat_id)
+    PRIMARY KEY(apparat_id)
 );
 
 create table ovelse_treningsokt(
@@ -64,11 +63,9 @@ create table ovelse_pa_apparat(
     ovelse_id INTEGER NOT NULL,
     antall_kilo INTEGER,
     antall_set INTEGER,
-    apparat_id INTEGER NOT NULL,
     PRIMARY KEY(ovelse_id),
-    FOREIGN KEY (apparat_id) REFERENCES apparat(apparat_id)
-        ON DELETE CASCADE ON UPDATE CASCADE
     FOREIGN KEY(ovelse_id) REFERENCES ovelse(ovelse_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table apparat_ovelse_relasjon(
