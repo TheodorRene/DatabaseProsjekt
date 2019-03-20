@@ -3,8 +3,10 @@ import tkinter as tk
 from tkinter import ttk
 from tables import *
 from database import DB
+from functions import GuiTools as gt
 
 #https://pythonprogramming.net/change-show-new-frame-tkinter/
+
 class main(tk.Tk):
     def __init__(self,*args,**kwargs):
         tk.Tk.__init__(self,*args,**kwargs)
@@ -13,7 +15,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage]
+        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -41,6 +43,8 @@ class LandingPage(tk.Frame):
         button3 = tk.Button(self, text="Apparater",command=lambda: controller.show_frame(ApparatPage))
         button3.pack()
 
+        button4 = tk.Button(self, text="Registrer øvelse",command=lambda: controller.show_frame(OvelsePage))
+        button4.pack()
 
 class Treningsokt_page(tk.Frame):
     def __init__(self, parent, controller):
@@ -147,6 +151,50 @@ class Last_N_TrainingExercisesPage(tk.Frame):
         self.results.config(text=string)
 
 
+class OvelsePage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.widgets = []
+
+        self.title = tk.Label(self, text="Registrer øvelse med apparat")
+        self.widgets.append(self.title)
+
+        ov_id = tk.Label(self, text="Ovelse id")
+        self.ov_id_ent = tk.Entry(self)
+        self.widgets.extend([ov_id, self.ov_id_ent])
+
+        ov_navn = tk.Label(self, text="Navn på øvelse")
+        self.ov_navn_ent = tk.Entry(self)
+        self.widgets.extend([ov_navn, self.ov_navn_ent])
+
+        ov_kilo = tk.Label(self, text="Antall kilo")
+        self.ov_kilo_ent = tk.Entry(self)
+        self.widgets.extend([ov_kilo, self.ov_kilo_ent])
+
+        ov_set = tk.Label(self, text="Antall set")
+        self.ov_set_ent = tk.Entry(self)
+        self.widgets.extend([ov_set, self.ov_set_ent])
+
+        ov_ap_id = tk.Label(self, text="Apparat id")
+        self.ov_ap_id_ent = tk.Entry(self)
+        self.widgets.extend([ov_ap_id, self.ov_ap_id_ent])
+
+        button = tk.Button(self, text="Legg til i database", command=self.into_db)
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        self.widgets.extend([button, home_button])
+
+        gt.pack_widgets(self.widgets)
+
+    def into_db(self):
+        ovelse = Ovelse(self.ov_id_ent.get(),self.ov_id_ent.get())
+        ovelse.save()
+        ovelse_pa_apparat = Ovelse_pa_apparat(self.ov_id_ent.get(),self.ov_kilo_ent.get(),\
+                                              self.ov_set_ent.get(),self.ov_ap_id_ent.get())
+        ovelse_pa_apparat.save()
+        self.title.config(text="Databasen har blitt oppdatert")
+        #gt.empty_ent(self.ent)
+
 class ApparatPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
@@ -171,8 +219,9 @@ class ApparatPage(tk.Frame):
         self.widgets.extend([ap_beskrivelse, ap_beskrivelse_ent])
         self.ent.append(ap_beskrivelse_ent)
 
-        for el in self.widgets:
-            el.pack()
+        #for el in self.widgets:
+        #    el.pack()
+        gt.pack_widgets(self.widgets)
 
         button = tk.Button(self, text="Legg til i database", command=self.into_db)
         button.pack()
@@ -184,7 +233,7 @@ class ApparatPage(tk.Frame):
         okt = Apparat(*[el.get() for el in self.ent])
         okt.save()
         self.title.config(text="Databasen har blitt oppdatert")
-        func = [el.delete(0,"end") for el in self.ent]
+        gt.empty_ent(self.ent)
 
 
 #viktig mainloop

@@ -1,5 +1,12 @@
 from database import DB
 
+'''
+create table ovelse(
+    ovelse_id INTEGER NOT NULL,
+    navn varchar(255),
+    PRIMARY KEY(ovelse_id)
+);
+'''
 
 class Ovelse:
     # legger til ovelse i databasen hvis du gir navn og ovelse_id, henter fra db hvis du kun gir ovelse_id
@@ -17,7 +24,7 @@ class Ovelse:
     def save(self):
         con = DB.get_connection()
         cursor = con.cursor()
-        db_req = f"INSERT INTO person (navn,pnr) VALUES ('{self.navn}',{self.ovelse_id});"
+        db_req = f"INSERT INTO ovelse VALUES ({self.ovelse_id},'{self.navn}');"
         cursor.execute(db_req)
         con.commit()
         con.close()
