@@ -23,10 +23,11 @@ create table person(
 );
 
 create table ovelse_uten_apparat(
-    ovelse_uten_apparat_id INTEGER NOT NULL,
-    navn varchar(255),
+    ovelse_id INTEGER NOT NULL,
     beskrivelse varchar(255),
-    PRIMARY KEY(ovelse_uten_apparat_id)
+    PRIMARY KEY(ovelse_id),
+    FOREIGN KEY (ovelse_id) REFERENCES ovelse(ovelse_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table ovelsegruppe(
