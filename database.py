@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from tables import *
 import sqlite3
 TRENINGDB = "trening.db"
 
@@ -17,6 +16,14 @@ class DB(ABC):
             raise Exception("Could not find database file")
         return con
 
+    @abstractmethod
+    def get_name_from_table(name,table):
+        # get db
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req = f"SELECT {name} FROM {table};"
+        result = cursor.execute(db_req).fetchall()
+        return [el[0] for el in result]
     @abstractmethod
     def get_col_db(table, pk, *args):
         # get db
@@ -61,7 +68,9 @@ class DB(ABC):
 
 
 if __name__=="__main__":
-    treningssenter = Treningssenter(10, navn="Yoboi")
-    print(treningssenter.navn)
-    print(DB.instance_exists(treningssenter))
+    #treningssenter = Treningssenter(10, navn="Yoboi")
+    #print(treningssenter.navn)
+    #print(DB.instance_exists(treningssenter))
+    pass
+
 
