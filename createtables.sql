@@ -52,11 +52,11 @@ create table apparat(
 
 create table ovelse_treningsokt(
     treningsokt_id INTEGER NOT NULL,
-    ovelses_id  INTEGER NOT NULL,
-    PRIMARY KEY(treningsokt_id,ovelses_id)
+    ovelse_id  INTEGER NOT NULL,
+    PRIMARY KEY(treningsokt_id,ovelse_id)
     FOREIGN KEY (treningsokt_id) REFERENCES treningsokt(treningsokt_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (ovelses_id) REFERENCES ovelse(ovelse_id)
+    FOREIGN KEY (ovelse_id) REFERENCES ovelse(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
