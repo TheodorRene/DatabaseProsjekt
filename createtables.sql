@@ -60,21 +60,21 @@ create table ovelse_treningsokt(
 );
 
 create table ovelse_pa_apparat(
-    ovelse_pa_apparat_id INTEGER NOT NULL,
+    ovelse_id INTEGER NOT NULL,
     antall_kilo INTEGER,
     antall_set INTEGER,
     apparat_id INTEGER NOT NULL,
-    PRIMARY KEY(ovelse_pa_apparat_id),
+    PRIMARY KEY(ovelse_id),
     FOREIGN KEY (apparat_id) REFERENCES apparat(apparat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
-    FOREIGN KEY(ovelse_pa_apparat_id) REFERENCES ovelse(ovelse_id)
+    FOREIGN KEY(ovelse_id) REFERENCES ovelse(ovelse_id)
 );
 
 create table apparat_ovelse_relasjon(
-    ovelse_pa_apparat_id INTEGER NOT NULL,
+    ovelse_id INTEGER NOT NULL,
     apparat_id INTEGER NOT NULL,
-    PRIMARY KEY(ovelse_pa_apparat_id, apparat_id)
-    FOREIGN KEY (ovelse_pa_apparat_id) REFERENCES ovelse_pa_apparat(ovelse_pa_apparat_id)
+    PRIMARY KEY(ovelse_id, apparat_id)
+    FOREIGN KEY (ovelse_id) REFERENCES ovelse_pa_apparat(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (apparat_id) REFERENCES apparat(apparat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
