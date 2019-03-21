@@ -155,7 +155,7 @@ class DB(ABC):
         con = DB.get_connection()
         cursor = con.cursor()
         print(gruppe_id)
-        db_req = f"SELECT ovelse_id FROM ovelse_i_ovelsegruppe NATURAL JOIN ovelsegruppe WHERE ovelsegruppe_id={gruppe_id};"
+        db_req = f"SELECT ovelse_id FROM ovelse_ovelsegruppe_relasjon NATURAL JOIN ovelsegruppe WHERE ovelsegruppe_id={gruppe_id};"
         result = [el[0] for el in cursor.execute(db_req).fetchall()]
         liste = []
         print("Ovelser fra øvelssesgrupe:\n" + str(result))

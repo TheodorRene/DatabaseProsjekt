@@ -4,9 +4,9 @@ DROP TABLE ovelse_uten_apparat;
 DROP TABLE ovelsegruppe;
 DROP TABLE ovelse;
 DROP TABLE apparat;
-DROP TABLE ovelse_treningsokt;
+DROP TABLE ovelse_treningsokt_relasjon;
 DROP TABLE ovelse_pa_apparat;
-DROP TABLE ovelse_i_ovelsegruppe;
+DROP TABLE ovelse_ovelsegruppe_relasjon;
 DROP TABLE treningsokt;
 DROP TABLE apparat_ovelse_relasjon;
 
