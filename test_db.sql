@@ -53,9 +53,6 @@ INSERT INTO ovelsegruppe VALUES (2,"Bryst");
 INSERT INTO ovelsegruppe VALUES (3,"Triceps");
 INSERT INTO ovelsegruppe VALUES (4,"Koordinasjon");
 
-INSERT INTO ovelse VALUES (1,"Pushups");
-INSERT INTO ovelse VALUES (2,"Situps");
-INSERT INTO ovelse VALUES (3,"Backflip");
 
 INSERT INTO ovelse_ovelsegruppe_relasjon VALUES (1, 2);
 INSERT INTO ovelse_ovelsegruppe_relasjon VALUES (1, 3);
