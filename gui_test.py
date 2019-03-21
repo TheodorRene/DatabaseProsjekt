@@ -11,7 +11,7 @@ class main(tk.Tk):
     def __init__(self,*args,**kwargs):
         tk.Tk.__init__(self,*args,**kwargs)
         container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
@@ -23,8 +23,8 @@ class main(tk.Tk):
         self.show_frame(LandingPage)
 
     def show_frame(self, cont):
-        fram = self.frames[cont]
-        fram.tkraise()
+        frame = self.frames[cont]
+        frame.tkraise()
 
 
 class LandingPage(tk.Frame):
@@ -189,8 +189,8 @@ class OvelsePage(tk.Frame):
         self.widgets.extend([ov_set, self.ov_set_ent])
 
         ov_ap_id = tk.Label(self, text="Apparat id")
-        self.ov_ap_id_ent = tk.Entry(self)
-        self.widgets.extend([ov_ap_id, self.ov_ap_id_ent])
+        self.ap_id_ent = tk.Entry(self)
+        self.widgets.extend([ov_ap_id, self.ap_id_ent])
 
         button = tk.Button(self, text="Legg til i database", command=self.into_db)
 
@@ -200,10 +200,13 @@ class OvelsePage(tk.Frame):
         gt.pack_widgets(self.widgets)
 
     def into_db(self):
-        ovelse = Ovelse(self.ov_id_ent.get(),self.ov_id_ent.get())
+        ovelse = Ovelse(self.ov_id_ent.get(),self.ov_navn_ent.get())
+        apparat_ovelse_relasjon = ApparatOvelseRelasjon(self.ov_id_ent.get(),self.ap_id_ent.get())
+        print(apparat_ovelse_relasjon)
         ovelse.save()
+        apparat_ovelse_relasjon.save()
         ovelse_pa_apparat = Ovelse_pa_apparat(self.ov_id_ent.get(),self.ov_kilo_ent.get(),\
-                                              self.ov_set_ent.get(),self.ov_ap_id_ent.get())
+                                              self.ov_set_ent.get())
         ovelse_pa_apparat.save()
         self.title.config(text="Databasen har blitt oppdatert")
         #gt.empty_ent(self.ent)
@@ -313,6 +316,7 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
         self.title.config(text="Databasen har blitt oppdatert")
         gt.empty_ent(self.ent)
 
+
 class RetrieveOvelseInOvelsegruppePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -361,12 +365,6 @@ class RetrieveOvelseInOvelsegruppePage(tk.Frame):
         for liste in ovelsegrupper:
             string += f"{liste}\n"
         self.results.config(text=string)
-
-
-
-
-
-
 
 
 class IntervallLoggPage(tk.Frame):
@@ -422,16 +420,11 @@ class IntervallLoggPage(tk.Frame):
                 string += f"---------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nAntall kilo: {element[2]}\nAntall sets: {element[3]}\n"
 
-        else
+        else:
             for element in query_set:
                 string += "----------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nBeskrivelse: {element[2]}\n"
             self.results.config(text=string)
-
-
-class SeIntervallLoggPage:
-    pass
-
 
 #viktig mainloop
 
