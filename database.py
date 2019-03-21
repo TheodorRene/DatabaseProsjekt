@@ -58,6 +58,24 @@ class DB(ABC):
         return result
 
     @abstractmethod
+    def getPersonalRecordApparat(ovelse):
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req= f"SELECT ovelse_id,MAX(antall_kilo*antall_set) FROM ovelse_pa_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%';"
+        result = cursor.execute(db_req).fetchall()
+        con.close()
+        return result
+
+    @abstractmethod
+    def getPersonalRecord(ovelse):
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req= f"SELECT * FROM ovelse_uten_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%';"
+        result = cursor.execute(db_req).fetchall()
+        con.close()
+        return result
+
+    @abstractmethod
     # returnerer objektet med gitt pk dersom det finnes, returnerer None ellers
     def instance_exists(instance):
         con = DB.get_connection()
