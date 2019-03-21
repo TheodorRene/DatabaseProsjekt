@@ -18,11 +18,10 @@ class Ovelse_pa_apparat:
     # legger til ovelse_pa_apparat i databasen hvis du gir alle attributer,
     # henter fra db hvis du kun gir pk
 
-    def __init__(self, ovelse_id, antall_kilo=None, antall_set=None, apparat_id=None):
+    def __init__(self, ovelse_id, antall_kilo=None, antall_set=None):
         self.ovelse_id = int(ovelse_id)
         self.antall_kilo = int(antall_kilo if antall_kilo else self.get_person_db("antall_kilo"))
         self.antall_set = int(antall_set if antall_set else self.get_person_db("antall_set"))
-        self.apparat_id = int(apparat_id if apparat_id else self.get_person_db("apparat_id"))
 
     def get_person_db(self, col):
         con = DB.get_connection()
@@ -35,7 +34,7 @@ class Ovelse_pa_apparat:
     def save(self):
         con = DB.get_connection()
         cursor = con.cursor()
-        db_req = f"INSERT INTO ovelse_pa_apparat VALUES ({self.ovelse_id}, {self.antall_kilo},{self.antall_set},{self.apparat_id});"
+        db_req = f"INSERT INTO ovelse_pa_apparat VALUES ({self.ovelse_id}, {self.antall_kilo},{self.antall_set});"
         cursor.execute(db_req)
         con.commit()
         con.close()
