@@ -69,8 +69,8 @@ create table ovelse_pa_apparat(
 );
 
 create table apparat_ovelse_relasjon(
-    ovelse_id INTEGER NOT NULL,
     apparat_id INTEGER NOT NULL,
+    ovelse_id INTEGER NOT NULL,
     PRIMARY KEY(ovelse_id, apparat_id)
     FOREIGN KEY (ovelse_id) REFERENCES ovelse_pa_apparat(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
