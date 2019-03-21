@@ -8,6 +8,9 @@ from functions import GuiTools as gt
 #https://pythonprogramming.net/change-show-new-frame-tkinter/
 
 class main(tk.Tk):
+    '''
+    Main function that runs the program
+    '''
     def __init__(self,*args,**kwargs):
         tk.Tk.__init__(self,*args,**kwargs)
         container = tk.Frame(self)
@@ -15,7 +18,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage,PersonalRecordPage,AddOvelseTreningsoktPage]
+        pages = [LandingPage, TreningsoktPage, LastNTrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage, PersonalRecordPage, AddOvelseTreningsoktPage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -28,16 +31,19 @@ class main(tk.Tk):
 
 
 class LandingPage(tk.Frame):
+    '''
+    Front page for the application
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
 
         label = tk.Label(self, text="Exersiceboi")
         label.pack(pady=10,padx=10)
 
-        button = tk.Button(self, text="Ny treningsøkt", command=lambda: controller.show_frame(Treningsokt_page))
+        button = tk.Button(self, text="Ny treningsøkt", command=lambda: controller.show_frame(TreningsoktPage))
         button.pack()
 
-        button2 = tk.Button(self, text="Treningsøkter",command=lambda: controller.show_frame(Last_N_TrainingExercisesPage))
+        button2 = tk.Button(self, text="Treningsøkter", command=lambda: controller.show_frame(LastNTrainingExercisesPage))
         button2.pack()
 
         button3 = tk.Button(self, text="Apparater",command=lambda: controller.show_frame(ApparatPage))
@@ -64,7 +70,8 @@ class LandingPage(tk.Frame):
         button10 = tk.Button(self, text="Legg til øvelse i økt", command=lambda: controller.show_frame(AddOvelseTreningsoktPage))
         button10.pack()
 
-class Treningsokt_page(tk.Frame):
+class TreningsoktPage(tk.Frame):
+    '''Page for creating new treningsokts'''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -105,7 +112,6 @@ class Treningsokt_page(tk.Frame):
         self.ent.append(t_prestasjon_ent)
 
         #senter_id
-        #Dette kan jo hentes fra databasen el[0] for el in con.execute(SELECT navn FROM treningsenter).fetchall();
         t_senter_id = tk.Label(self, text="Senter id")
         t_senter_id_ent = tk.Entry(self)
         self.widgets.extend([t_senter_id,t_senter_id_ent])
@@ -120,23 +126,24 @@ class Treningsokt_page(tk.Frame):
         but = tk.Button(self, text='Legg til i database', width=25, command=self.into_db)
         self.widgets.append(but)
 
-        #forteller tkinter at den skal legge på plass alle objektene våre
+        # Adds all widgets
         for el in self.widgets:
             el.pack()
-        #button
 
         home_button = tk.Button(self, text="Gå tilbake", command=lambda: controller.show_frame(LandingPage))
         home_button.pack()
 
 
     def into_db(self):
-        #anbefaler å prøve å forstå linjen under, meget fornøyd med den hehe
         okt = Treningsokt(*[el.get() for el in self.ent])
         okt.save()
         self.title.config(text="Databasen har blitt oppdatert")
 
 
-class Last_N_TrainingExercisesPage(tk.Frame):
+class LastNTrainingExercisesPage(tk.Frame):
+    '''
+    Page for showing the last 'n' treningokts, n given by the user.
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.num_values = [1,2,3,4,5,6,7,8,9,10]
@@ -147,7 +154,7 @@ class Last_N_TrainingExercisesPage(tk.Frame):
         self.results = tk.Label(self, text="-------------------")
         self.results.pack(pady=10,padx=10)
 
-        button = tk.Button(self, text="Hent fra database", command=self.getExercises)
+        button = tk.Button(self, text="Hent fra database", command=self.get_exercises)
         button.pack()
 
         home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
@@ -156,11 +163,7 @@ class Last_N_TrainingExercisesPage(tk.Frame):
         self.num_ent = ttk.Combobox(self,values = self.num_values)
         self.num_ent.pack()
 
-        #Nødvendig hvis vi må forholde oss til en person
-        #self.pnr_ent = tk.Entry(self)
-        #self.pnr_ent.pack()
-
-    def getExercises(self):
+    def get_exercises(self):
         el = DB.get_n_okter(int(self.num_ent.get()))
         string=""
         for liste in el:
@@ -170,6 +173,9 @@ class Last_N_TrainingExercisesPage(tk.Frame):
 
 
 class OvelsePage(tk.Frame):
+    '''
+    Page for registering a new ovelse
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -194,7 +200,7 @@ class OvelsePage(tk.Frame):
         self.ov_set_ent = tk.Entry(self)
         self.widgets.extend([ov_set, self.ov_set_ent])
 
-        ov_ap_id = tk.Label(self, text="Apparat id")
+        ov_ap_id = tk.Label(self, text="Apparat")
         self.apparat_entry = ttk.Combobox(self, values=self.all_apparat)
         self.widgets.extend([ov_ap_id, self.apparat_entry])
 
@@ -211,7 +217,6 @@ class OvelsePage(tk.Frame):
 
         ovelse = Ovelse(self.ov_id_ent.get(),self.ov_navn_ent.get())
         apparat_ovelse_relasjon = ApparatOvelseRelasjon(apparat_id,self.ov_id_ent.get())
-        print(apparat_ovelse_relasjon)
         ovelse.save()
         apparat_ovelse_relasjon.save()
         ovelse_pa_apparat = Ovelse_pa_apparat(self.ov_id_ent.get(),self.ov_kilo_ent.get(),\
@@ -221,6 +226,9 @@ class OvelsePage(tk.Frame):
         #gt.empty_ent(self.ent)
 
 class ApparatPage(tk.Frame):
+    '''
+    Page for creating a new apparat
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -261,6 +269,9 @@ class ApparatPage(tk.Frame):
         gt.empty_ent(self.ent)
 
 class RegisterOvelsegruppePage(tk.Frame):
+    '''
+    Page for registering a new ovelsegruppe
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -290,6 +301,9 @@ class RegisterOvelsegruppePage(tk.Frame):
         #gt.empty_ent(self.ent)
 
 class AddOvelseToOvelsegruppePage(tk.Frame):
+    '''
+    Page for adding an ovelse to a ovelsegruppe
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -310,9 +324,6 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
         self.widgets.extend([ovelse, self.ovelse_entry])
         self.ent.append(self.ovelse_entry)
 
-
-        #for el in self.widgets:
-        #    el.pack()
         gt.pack_widgets(self.widgets)
 
         button = tk.Button(self, text="Legg til i ovelsegruppe", command=self.into_db)
@@ -335,16 +346,13 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
 
 
 class RetrieveOvelseInOvelsegruppePage(tk.Frame):
+    '''
+    Page for showing all ovelses in a given ovelsegruppe
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.widgets = []
-
-        #self.ovelsegrupper=["Ben","Armer", "Hode"]
-        self.ovelsegrupper = [el[0] for el in DB.get_ovelsegrupper()]
-        ovelsegruppe_navn=DB.get_ovelsegrupper
-
-        #for row in ovelsegruppe_navn:                      #Vil ikke iterere over en fetchall, hvordan får jeg liste med navn da?
-           # self.ovelsegrupper.append(row[0])
+        self.ovelsegrupper = [el[0] for el in DB.project_table('ovelsegruppe', 'navn,ovelsegruppe_id')]
 
         self.title = tk.Label(self, text="Velg ovelsegruppe")
         self.widgets.append(self.title)
@@ -352,15 +360,8 @@ class RetrieveOvelseInOvelsegruppePage(tk.Frame):
         self.results = tk.Label(self, text="-------------------")
         self.results.pack(pady=10, padx=10)
 
-
-        """gruppe_id = tk.Label(self, text="Ovelsegruppe id")
-        self.gruppe_id_ent = tk.Entry(self)
-        self.widgets.extend([gruppe_id, self.gruppe_id_ent])"""
-
         self.name_ent = ttk.Combobox(self, values=self.ovelsegrupper)
         self.name_ent.pack()
-
-
 
         button = tk.Button(self, text="Hent fra database", command=self.get_ovelser)
 
@@ -368,16 +369,11 @@ class RetrieveOvelseInOvelsegruppePage(tk.Frame):
         self.widgets.extend([button, home_button])
 
         gt.pack_widgets(self.widgets)
-    #def get_id_ovelsegruppe(self):
-        #el=DB.get_id_of_ovelsegruppe(self.name_ent.get())
-        #return el #Kan man returnere noe her?
 
     def get_ovelser(self):
-        ovelsegruppe_id=DB.get_id_of_ovelsegruppe(self.name_ent.get())
-        print(ovelsegruppe_id)
+        navn = self.name_ent.get()
+        ovelsegruppe_id = DB.project_table_where('ovelsegruppe_id', 'ovelsegruppe', 'navn', navn)
         ovelsegrupper=DB.get_ovelser_in_ovelsegruppe(ovelsegruppe_id)
-        print(ovelsegrupper)
-         #Må endre sånn at man skaffer riktig info
         string = "Ovelser:\n"
         for liste in ovelsegrupper:
             string += f"{liste}\n"
@@ -385,6 +381,9 @@ class RetrieveOvelseInOvelsegruppePage(tk.Frame):
 
 
 class IntervallLoggPage(tk.Frame):
+    '''
+    Page for showing treningokt history of a single ovelse in a specific time period.
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -430,7 +429,6 @@ class IntervallLoggPage(tk.Frame):
         ovelse_navn = self.t_form_comb.get()
         ovelse_id = int(DB.project_table_where('ovelse_id', 'ovelse', 'navn', ovelse_navn))
         query_set, on_apparat = DB.ovelse_log_in_interval(ovelse_id, self.t_dato_start_ent.get(), self.t_dato_end_ent.get())
-        print(query_set)
         string = ""
         if on_apparat:
             for element in query_set:
@@ -445,6 +443,9 @@ class IntervallLoggPage(tk.Frame):
 
 
 class PersonalRecordPage(tk.Frame):
+    '''
+    Page for showing the personal record. This is kind of arbitrary as the ovelses contains information about sets and weights..
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
 
@@ -467,7 +468,7 @@ class PersonalRecordPage(tk.Frame):
 
 
     def getExercises(self):
-        ex = DB.getPersonalRecord(self.t_form_comb.get())
+        ex = DB.get_personal_record(self.t_form_comb.get())
         try:
             string= "Ant Kilo: " + str(ex[1]) + "\nAnt set:" + str(ex[2]) + "\nNavn: " + ex[3]
         except Exception:
@@ -475,6 +476,9 @@ class PersonalRecordPage(tk.Frame):
         self.results.config(text=string)
 
 class AddOvelseTreningsoktPage(tk.Frame):
+    '''
+    Page for adding a ovelse to a treningsokt.
+    '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
@@ -503,21 +507,18 @@ class AddOvelseTreningsoktPage(tk.Frame):
     def into_db(self):
         ovelse_navn = self.ovelse_entry.get()
         ovelse_id = int(DB.project_table_where('ovelse_id', 'ovelse', 'navn', ovelse_navn))
-        print(ovelse_id)
 
         treningsokt_id = self.okt_entry.get().split(" ")[0]
-        print(treningsokt_id)
 
         ovelse_treningsokt_relasjon = OvelseTreningsoktRelasjon(ovelse_id, treningsokt_id)
         ovelse_treningsokt_relasjon.save()
         self.title.config(text="Databasen har blitt oppdatert")
-        #gt.empty_ent(self.ent)
-
-#viktig mainloop
 
 
+# RUNS THE SCRIPT
 app = main()
 app.mainloop()
+
 
 
 

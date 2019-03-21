@@ -3,20 +3,19 @@ from database import DB
 
 class Treningssenter:
     def __init__(self, id_senter, navn=None):
-        # METADATA
-        self.pk_field = "treningssenter_id"
+        '''
+        Makes a table instance. If all fields are provided, the function makes a new tuple in the database.
+        Otherwise, it uploads a instance based on the tuple in the table.
+        '''
+        self.navn = navn if navn else self.get_senter_db(id_senter, "navn")
 
-        # OBJEKTDATA
-        self.pk = id_senter
-        self.navn = navn if navn else self.get_column_db(id_senter, "navn")
-
-    def __str__(self):
-        #
-        return "treningssenter"
-
-
-    # return column
-    def get_column_db(self, id_senter, col):
+    def get_senter_db(self, id_senter, col):
+        '''
+        Gets an entry in the database with id_senter. Projects only the given column, given by col.
+        :param id_senter:
+        :param col: The column to be projected
+        :return: Returns single entry
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
         db_req = f"SELECT {col} FROM treningssenter WHERE treningssenter_id={id_senter}"

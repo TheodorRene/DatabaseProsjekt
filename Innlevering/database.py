@@ -92,6 +92,7 @@ class DB(ABC):
         cursor = con.cursor()
         db_req = f"SELECT * FROM {instance} WHERE {instance.pk_field}={instance.pk}"
         result = cursor.execute(db_req).fetchone()
+        con.close()
         return result
 
     @abstractmethod
@@ -136,6 +137,7 @@ class DB(ABC):
 
         query_uten_apparat = f"SELECT {fields_uten_apparat} FROM {table_uten_apparat} WHERE {constraint}"
         ovelse_uten_apparat = cursor.execute(query_uten_apparat).fetchall()
+        con.close()
         return ovelse_uten_apparat, False
 
     def get_ovelsegrupper():
@@ -173,12 +175,15 @@ class DB(ABC):
 
     @abstractmethod
     def project_table(table, project_cols_string):
-        print(project_cols_string)
-        print(table)
         con = DB.get_connection()
         cursor = con.cursor()
         db_req = f"SELECT {project_cols_string} FROM {table};"
-        result = [el[0] for el in cursor.execute(db_req).fetchall()]
+
+        if "," in project_cols_string:
+            result = cursor.execute(db_req).fetchall()
+
+        else:
+            result = [el[0] for el in cursor.execute(db_req).fetchall()]
         con.close()
         print("your combobbox" + str(result) + "end")
         return result
@@ -196,6 +201,7 @@ class DB(ABC):
         cursor = con.cursor()
         db_req = f"SELECT {project} FROM {table} WHERE {lookup} = '{identifyer}';"
         result = cursor.execute(db_req).fetchone()
+        con.close()
         return result[0]
 
 

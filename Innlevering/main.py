@@ -11,11 +11,11 @@ class main(tk.Tk):
     def __init__(self,*args,**kwargs):
         tk.Tk.__init__(self,*args,**kwargs)
         container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage,PersonalRecordPage]
+        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage,PersonalRecordPage,AddOvelseTreningsoktPage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -23,8 +23,8 @@ class main(tk.Tk):
         self.show_frame(LandingPage)
 
     def show_frame(self, cont):
-        fram = self.frames[cont]
-        fram.tkraise()
+        frame = self.frames[cont]
+        frame.tkraise()
 
 
 class LandingPage(tk.Frame):
@@ -60,6 +60,9 @@ class LandingPage(tk.Frame):
 
         button9 = tk.Button(self, text="Personlig rekord", command=lambda: controller.show_frame(PersonalRecordPage))
         button9.pack()
+
+        button10 = tk.Button(self, text="Legg til øvelse i økt", command=lambda: controller.show_frame(AddOvelseTreningsoktPage))
+        button10.pack()
 
 class Treningsokt_page(tk.Frame):
     def __init__(self, parent, controller):
@@ -170,6 +173,7 @@ class OvelsePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
+        self.all_apparat = DB.project_table('apparat', 'navn')
 
         self.title = tk.Label(self, text="Registrer øvelse med apparat")
         self.widgets.append(self.title)
@@ -191,8 +195,8 @@ class OvelsePage(tk.Frame):
         self.widgets.extend([ov_set, self.ov_set_ent])
 
         ov_ap_id = tk.Label(self, text="Apparat id")
-        self.ov_ap_id_ent = tk.Entry(self)
-        self.widgets.extend([ov_ap_id, self.ov_ap_id_ent])
+        self.apparat_entry = ttk.Combobox(self, values=self.all_apparat)
+        self.widgets.extend([ov_ap_id, self.apparat_entry])
 
         button = tk.Button(self, text="Legg til i database", command=self.into_db)
 
@@ -202,10 +206,16 @@ class OvelsePage(tk.Frame):
         gt.pack_widgets(self.widgets)
 
     def into_db(self):
-        ovelse = Ovelse(self.ov_id_ent.get(),self.ov_id_ent.get())
+        apparat_navn = self.apparat_entry.get()
+        apparat_id = int(DB.project_table_where('apparat_id', 'apparat', 'navn', apparat_navn))
+
+        ovelse = Ovelse(self.ov_id_ent.get(),self.ov_navn_ent.get())
+        apparat_ovelse_relasjon = ApparatOvelseRelasjon(apparat_id,self.ov_id_ent.get())
+        print(apparat_ovelse_relasjon)
         ovelse.save()
+        apparat_ovelse_relasjon.save()
         ovelse_pa_apparat = Ovelse_pa_apparat(self.ov_id_ent.get(),self.ov_kilo_ent.get(),\
-                                              self.ov_set_ent.get(),self.ov_ap_id_ent.get())
+                                              self.ov_set_ent.get())
         ovelse_pa_apparat.save()
         self.title.config(text="Databasen har blitt oppdatert")
         #gt.empty_ent(self.ent)
@@ -284,19 +294,21 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
         tk.Frame.__init__(self,parent)
         self.widgets = []
         self.ent = []
+        self.all_ovelsegruppe = DB.project_table('ovelsegruppe', 'navn')
+        self.all_ovelse = DB.project_table('ovelse', 'navn')
 
         self.title = tk.Label(self, text="Legg til ovelse til ovelsegruppe")
         self.widgets.append(self.title)
 
-        gruppe_id = tk.Label(self, text="Ovelsegruppe id")
-        self.gruppe_id_ent = tk.Entry(self)
-        self.widgets.extend([gruppe_id, self.gruppe_id_ent])
-        self.ent.append(self.gruppe_id_ent)
+        ovelsegruppe = tk.Label(self, text="Ovelsegruppe")
+        self.ovelsegruppe_entry = ttk.Combobox(self, values=self.all_ovelsegruppe)
+        self.widgets.extend([ovelsegruppe, self.ovelsegruppe_entry])
+        self.ent.append(self.ovelsegruppe_entry)
 
-        ov_id = tk.Label(self, text="Ovelse id")
-        self.ov_id_ent = tk.Entry(self)
-        self.widgets.extend([ov_id, self.ov_id_ent])
-        self.ent.append(self.ov_id_ent)
+        ovelse = tk.Label(self, text="Ovelse")
+        self.ovelse_entry = ttk.Combobox(self, values=self.all_ovelse)
+        self.widgets.extend([ovelse, self.ovelse_entry])
+        self.ent.append(self.ovelse_entry)
 
 
         #for el in self.widgets:
@@ -310,10 +322,17 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
         home_button.pack()
 
     def into_db(self):
-        ovelse_i_ovelsegruppe = Ovelse_i_ovelsegruppe(self.ov_id_ent.get(),self.gruppe_id_ent.get())
+        ovelse_navn = self.ovelse_entry.get()
+        ovelse_id = int(DB.project_table_where('ovelse_id', 'ovelse', 'navn', ovelse_navn))
+
+        ovelsegruppe_navn = self.ovelsegruppe_entry.get()
+        ovelsegruppe_id = int(DB.project_table_where('ovelsegruppe_id', 'ovelsegruppe', 'navn', ovelsegruppe_navn))
+
+        ovelse_i_ovelsegruppe = Ovelse_i_ovelsegruppe(ovelse_id,ovelsegruppe_id)
         ovelse_i_ovelsegruppe.save()
         self.title.config(text="Databasen har blitt oppdatert")
         gt.empty_ent(self.ent)
+
 
 class RetrieveOvelseInOvelsegruppePage(tk.Frame):
     def __init__(self, parent, controller):
@@ -422,11 +441,8 @@ class IntervallLoggPage(tk.Frame):
             for element in query_set:
                 string += "----------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nBeskrivelse: {element[2]}\n"
-            self.results.config(text=string)
+        self.results.config(text=string)
 
-
-class SeIntervallLoggPage:
-    pass
 
 class PersonalRecordPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -451,12 +467,51 @@ class PersonalRecordPage(tk.Frame):
 
 
     def getExercises(self):
-        ex = DB.getPersonalRecord(self.t_form_comb.get())
+        ex = DB.get_personal_record(self.t_form_comb.get())
         try:
             string= "Ant Kilo: " + str(ex[1]) + "\nAnt set:" + str(ex[2]) + "\nNavn: " + ex[3]
         except Exception:
             string = ex
         self.results.config(text=string)
+
+class AddOvelseTreningsoktPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.widgets = []
+        self.all_ovelse = DB.project_table('ovelse', 'navn')
+        self.all_treningsokt = DB.project_table('treningsokt', 'treningsokt_id, dato')
+
+        self.title = tk.Label(self, text="Logg øvelse i treningsøkt")
+        self.widgets.append(self.title)
+
+        okt_id = tk.Label(self, text="Treningsøkt")
+        self.okt_entry = ttk.Combobox(self, values=self.all_treningsokt)
+        self.widgets.extend([okt_id, self.okt_entry])
+
+        ovelse_id = tk.Label(self, text="Øvelse")
+        self.ovelse_entry = ttk.Combobox(self, values=self.all_ovelse)
+        self.widgets.extend([ovelse_id, self.ovelse_entry])
+
+        button = tk.Button(self, text="Legg til øvelse i treningsøkt", command=self.into_db)
+
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        self.widgets.extend([button, home_button])
+
+        gt.pack_widgets(self.widgets)
+
+    def into_db(self):
+        ovelse_navn = self.ovelse_entry.get()
+        ovelse_id = int(DB.project_table_where('ovelse_id', 'ovelse', 'navn', ovelse_navn))
+        print(ovelse_id)
+
+        treningsokt_id = self.okt_entry.get().split(" ")[0]
+        print(treningsokt_id)
+
+        ovelse_treningsokt_relasjon = OvelseTreningsoktRelasjon(ovelse_id, treningsokt_id)
+        ovelse_treningsokt_relasjon.save()
+        self.title.config(text="Databasen har blitt oppdatert")
+        #gt.empty_ent(self.ent)
 
 #viktig mainloop
 
