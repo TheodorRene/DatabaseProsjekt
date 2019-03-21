@@ -49,9 +49,9 @@ create table apparat(
     PRIMARY KEY(apparat_id)
 );
 
-create table ovelse_treningsokt(
-    treningsokt_id INTEGER NOT NULL,
+create table ovelse_treningsokt_relasjon(
     ovelse_id  INTEGER NOT NULL,
+    treningsokt_id INTEGER NOT NULL,
     PRIMARY KEY(treningsokt_id,ovelse_id)
     FOREIGN KEY (treningsokt_id) REFERENCES treningsokt(treningsokt_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -71,6 +71,9 @@ create table ovelse_pa_apparat(
 create table apparat_ovelse_relasjon(
     ovelse_id INTEGER NOT NULL,
     apparat_id INTEGER NOT NULL,
+    apparat_id INTEGER NOT NULL,
+    ovelse_id INTEGER NOT NULL,
+
     PRIMARY KEY(ovelse_id, apparat_id)
     FOREIGN KEY (ovelse_id) REFERENCES ovelse_pa_apparat(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -78,7 +81,7 @@ create table apparat_ovelse_relasjon(
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table ovelse_i_ovelsegruppe(
+create table ovelse_ovelsegruppe_relasjon(
     ovelse_id INTEGER NOT NULL,
     ovelsegruppe_id INTEGER NOT NULL,
     PRIMARY KEY(ovelse_id,ovelsegruppe_id),
