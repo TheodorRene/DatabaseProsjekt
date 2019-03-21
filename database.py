@@ -28,6 +28,9 @@ class DB(ABC):
         db_req = f"SELECT {name} FROM {table};"
         result = cursor.execute(db_req).fetchall()
         return [el[0] for el in result]
+
+
+
     @abstractmethod
     def get_col_db(table, pk, *args):
         # get db
@@ -110,20 +113,24 @@ class DB(ABC):
         # SQL query that connects ovelse_pa_apparat with treningsokt
         table_pa_apparat = "ovelse_pa_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
 
+        # Fields wanted from the query
+        fields_pa_apparat = "dato, navn, antall_kilo, antall_set"
+        fields_uten_apparat = "dato, navn, beskrivelse"
+
         # Constraint that make sure the ovelse is in a specified interval
         constraint = f"(ovelse_id={ovelse_id} AND dato >= {format_start} AND dato <= {format_end})"
 
-        query_pa_apparat = f"SELECT * FROM {table_pa_apparat} WHERE {constraint}"
+        query_pa_apparat = f"SELECT {fields_pa_apparat} FROM {table_pa_apparat} WHERE {constraint}"
         ovelse_pa_apparat = cursor.execute(query_pa_apparat).fetchall()
         if ovelse_pa_apparat:
-            return ovelse_pa_apparat
+            return ovelse_pa_apparat, True
 
         # SQL query that connects ovelse_uten_apparat with treningsokt
         table_uten_apparat = "ovelse_uten_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
 
-        query_uten_apparat = f"SELECT * FROM {table_uten_apparat} WHERE {constraint}"
+        query_uten_apparat = f"SELECT {fields_uten_apparat} FROM {table_uten_apparat} WHERE {constraint}"
         ovelse_uten_apparat = cursor.execute(query_uten_apparat).fetchall()
-        return ovelse_uten_apparat
+        return ovelse_uten_apparat, False
 
     def get_ovelsegrupper():
         con = DB.get_connection()
@@ -157,6 +164,33 @@ class DB(ABC):
             liste.append(cursor.execute(db_req_2).fetchone()[0])
         con.close()
         return liste
+
+    @abstractmethod
+    def project_table(table, project_cols_string):
+        print(project_cols_string)
+        print(table)
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req = f"SELECT {project_cols_string} FROM {table};"
+        result = cursor.execute(db_req).fetchall()
+        con.close()
+        print(result)
+        return result
+
+    @abstractmethod
+    def project_table_where(project, table, lookup, identifyer):
+        '''
+
+        :param project: Column you want to project
+        :param table: Table you want to look up
+        :param identifyer: The unique ID/name you have
+        :return: Returns the projected entity
+        '''
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req = f"SELECT {project} FROM {table} WHERE {lookup} = '{identifyer}';"
+        result = cursor.execute(db_req).fetchone()
+        return result[0]
 
 
 if __name__=="__main__":
