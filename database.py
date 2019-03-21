@@ -6,6 +6,9 @@ TRENINGDB = "trening.db"
 # generell DB klasse, kan sikkert brukes til veldig generelle kall
 # nå blir det nesten som at klassene i python speilier tabeller i db, litt usikker på hva som er ideelt
 class DB(ABC):
+    '''
+    A general database class that is used for (almost) all SQL queries.
+    '''
 
     @abstractmethod
     def get_connection():
@@ -21,46 +24,35 @@ class DB(ABC):
         return con
 
     @abstractmethod
-    def get_name_from_table(name,table):
-        # get db
-        con = DB.get_connection()
-        cursor = con.cursor()
-        db_req = f"SELECT {name} FROM {table};"
-        result = cursor.execute(db_req).fetchall()
-        return [el[0] for el in result]
-
-
-
-    @abstractmethod
     def get_col_db(table, pk, *args):
-        # get db
+        '''
+        General project function that returns a given record in a table with pk=pk, with the fields defined in args.
+        :param pk: The record's primary key value
+        :param args: An arbritrary number of fields, that will be projected.
+        :return: A record with the given fields.
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
 
-        # lag comma seperated values from args
-        arguments = ""
+        # Make a string for the fields, used in the database request.
+        fields = ""
         for num,el in enumerate(args):
             if (num != (len(args)-1)):
-                arguments += " " + el + ","
+                fields += " " + el + ","
             else:
-                arguments += el
+                fields += el
 
         db_req = f"SELECT {arguments} FROM {table} WHERE {table}_id={pk};"
-
         result = cursor.execute(db_req).fetchone()
         con.close()
         return result
 
-    def insertRow_db(table):
-        dbReq = f"INSERT INTO {table} VALUES ({val});"
-
-    # Retrieve N treningsokter from DB. 
     @abstractmethod
     def get_n_okter(n):
         '''
         Get information about the n previous treningsokts
         :param n: Number of treningsokt wanted
-        :return: Returns the query result
+        :return: Returns the query result for the n last treningsokts
         '''
         con = DB.get_connection()
         cursor = con.cursor()
@@ -70,7 +62,12 @@ class DB(ABC):
         return result
 
     @abstractmethod
-    def getPersonalRecord(ovelse):
+    def get_personal_record(ovelse):
+        '''
+        Gives the personal best for a ovelse
+        :param ovelse: A ovelse which the user wants to get the personal best
+        :return: Returns the query result for the personal best
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
         if DB.has_apparat(ovelse):
@@ -85,22 +82,18 @@ class DB(ABC):
         con.close()
         return result
 
-    # returnerer objektet med gitt pk dersom det finnes, returnerer None ellers
-    @abstractmethod
-    def instance_exists(instance):
-        con = DB.get_connection()
-        cursor = con.cursor()
-        db_req = f"SELECT * FROM {instance} WHERE {instance.pk_field}={instance.pk}"
-        result = cursor.execute(db_req).fetchone()
-        con.close()
-        return result
-
     @abstractmethod
     def has_apparat(ovelse):
+        '''
+        Tells whether the ovelse has a apparat or not.
+        :param ovelse: The ovelse wanted to inspect
+        :return: Returns a bool value
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
         query_pa_apparat = f"SELECT * FROM ovelse_pa_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%'"
         has_apparat = cursor.execute(query_pa_apparat).fetchall()
+        con.close()
         return bool(has_apparat)
 
     @abstractmethod
@@ -110,15 +103,16 @@ class DB(ABC):
         :param ovelse_id: ID of the specified ovelse
         :param start: Start of time interval
         :param end: End of time interval
-        :return: Returns the query result
+        :returns: Returns the query result, and a bool indicating whether if the ovelse has an apparat or not
         '''
         format_start = f"Datetime('{start}')"
         format_end = f"Datetime('{end}')"
         con = DB.get_connection()
         cursor = con.cursor()
 
-        # SQL query that connects ovelse_pa_apparat with treningsokt
+        # SQL queries that connects the different ovelses with treningsokt
         table_pa_apparat = "ovelse_pa_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
+        table_uten_apparat = "ovelse_uten_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
 
         # Fields wanted from the query
         fields_pa_apparat = "dato, navn, antall_kilo, antall_set"
@@ -132,37 +126,19 @@ class DB(ABC):
         if ovelse_pa_apparat:
             return ovelse_pa_apparat, True
 
-        # SQL query that connects ovelse_uten_apparat with treningsokt
-        table_uten_apparat = "ovelse_uten_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
-
         query_uten_apparat = f"SELECT {fields_uten_apparat} FROM {table_uten_apparat} WHERE {constraint}"
         ovelse_uten_apparat = cursor.execute(query_uten_apparat).fetchall()
         con.close()
         return ovelse_uten_apparat, False
 
-    def get_ovelsegrupper():
-        con = DB.get_connection()
-        cursor = con.cursor()
-        db_req = f"SELECT navn,ovelsegruppe_id FROM ovelsegruppe"  # WHERE {gruppe_id}={1}
-        result = cursor.execute(db_req).fetchall()
-        con.close()
-        return result
-
-    @abstractmethod
-    def get_id_of_ovelsegruppe(navn):
-        con = DB.get_connection()
-        cursor = con.cursor()
-        db_req = f"SELECT ovelsegruppe_id FROM ovelsegruppe WHERE navn='{navn}'; "  # WHERE {gruppe_id}={1}
-        print(navn)
-        result = cursor.execute(db_req).fetchone()[0]
-        con.close()
-        return result
 
     @abstractmethod
     def get_ovelser_in_ovelsegruppe(gruppe_id):
+        '''
+        :return: The queryset of all the ovelser in the given ovelsegruppe.
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
-        print(gruppe_id)
         db_req = f"SELECT ovelse_id FROM ovelse_ovelsegruppe_relasjon NATURAL JOIN ovelsegruppe WHERE ovelsegruppe_id={gruppe_id};"
         result = [el[0] for el in cursor.execute(db_req).fetchall()]
         liste = []
@@ -174,39 +150,36 @@ class DB(ABC):
         return liste
 
     @abstractmethod
-    def project_table(table, project_cols_string):
+    def project_table(table, project_cols):
+        '''
+        :param table: The table which the information should be taken from
+        :param project_cols: A string identifying which columns that should be projected from the query
+        :return: A queryset with the given columns
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
-        db_req = f"SELECT {project_cols_string} FROM {table};"
+        db_req = f"SELECT {project_cols} FROM {table};"
 
-        if "," in project_cols_string:
+        if "," in project_cols:
             result = cursor.execute(db_req).fetchall()
 
         else:
             result = [el[0] for el in cursor.execute(db_req).fetchall()]
+
         con.close()
-        print("your combobbox" + str(result) + "end")
         return result
 
     @abstractmethod
-    def project_table_where(project, table, lookup, identifyer):
+    def project_table_where(project, table, lookup, identifier):
         '''
-
         :param project: Column you want to project
         :param table: Table you want to look up
-        :param identifyer: The unique ID/name you have
+        :param identifier: The unique ID/name you have
         :return: Returns the projected entity
         '''
         con = DB.get_connection()
         cursor = con.cursor()
-        db_req = f"SELECT {project} FROM {table} WHERE {lookup} = '{identifyer}';"
+        db_req = f"SELECT {project} FROM {table} WHERE {lookup} = '{identifier}';"
         result = cursor.execute(db_req).fetchone()
         con.close()
         return result[0]
-
-
-if __name__=="__main__":
-    #treningssenter = Treningssenter(10, navn="Yoboi")
-    #print(treningssenter.navn)
-    #print(DB.instance_exists(treningssenter))
-    pass
