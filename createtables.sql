@@ -23,10 +23,11 @@ create table person(
 );
 
 create table ovelse_uten_apparat(
-    ovelse_uten_apparat_id INTEGER NOT NULL,
-    navn varchar(255),
+    ovelse_id INTEGER NOT NULL,
     beskrivelse varchar(255),
-    PRIMARY KEY(ovelse_uten_apparat_id)
+    PRIMARY KEY(ovelse_id),
+    FOREIGN KEY (ovelse_id) REFERENCES ovelse(ovelse_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table ovelsegruppe(
@@ -45,42 +46,39 @@ create table apparat(
     apparat_id INTEGER NOT NULL,
     navn varchar(255),
     beskrivelse varchar(255),
-    PRIMARY KEY(apparat_id),
-    FOREIGN KEY(apparat_id) REFERENCES apparat_ovelse_relasjon(apparat_id)
+    PRIMARY KEY(apparat_id)
 );
 
-create table ovelse_treningsokt(
+create table ovelse_treningsokt_relasjon(
+    ovelse_id  INTEGER NOT NULL,
     treningsokt_id INTEGER NOT NULL,
-    ovelses_id  INTEGER NOT NULL,
-    PRIMARY KEY(treningsokt_id,ovelses_id)
+    PRIMARY KEY(treningsokt_id,ovelse_id)
     FOREIGN KEY (treningsokt_id) REFERENCES treningsokt(treningsokt_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (ovelses_id) REFERENCES ovelse(ovelse_id)
+    FOREIGN KEY (ovelse_id) REFERENCES ovelse(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table ovelse_pa_apparat(
-    ovelse_pa_apparat_id INTEGER NOT NULL,
+    ovelse_id INTEGER NOT NULL,
     antall_kilo INTEGER,
     antall_set INTEGER,
-    apparat_id INTEGER NOT NULL,
-    PRIMARY KEY(ovelse_pa_apparat_id),
-    FOREIGN KEY (apparat_id) REFERENCES apparat(apparat_id)
+    PRIMARY KEY(ovelse_id),
+    FOREIGN KEY(ovelse_id) REFERENCES ovelse(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE
-    FOREIGN KEY(ovelse_pa_apparat_id) REFERENCES ovelse(ovelse_id)
 );
 
 create table apparat_ovelse_relasjon(
-    ovelse_pa_apparat_id INTEGER NOT NULL,
     apparat_id INTEGER NOT NULL,
-    PRIMARY KEY(ovelse_pa_apparat_id, apparat_id)
-    FOREIGN KEY (ovelse_pa_apparat_id) REFERENCES ovelse_pa_apparat(ovelse_pa_apparat_id)
+    ovelse_id INTEGER NOT NULL,
+    PRIMARY KEY(ovelse_id, apparat_id)
+    FOREIGN KEY (ovelse_id) REFERENCES ovelse_pa_apparat(ovelse_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (apparat_id) REFERENCES apparat(apparat_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table ovelse_i_ovelsegruppe(
+create table ovelse_ovelsegruppe_relasjon(
     ovelse_id INTEGER NOT NULL,
     ovelsegruppe_id INTEGER NOT NULL,
     PRIMARY KEY(ovelse_id,ovelsegruppe_id),
