@@ -18,7 +18,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage,PersonalRecordPage,AddOvelseTreningsoktPage]
+        pages = [LandingPage, TreningsoktPage, LastNTrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage, PersonalRecordPage, AddOvelseTreningsoktPage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -40,10 +40,10 @@ class LandingPage(tk.Frame):
         label = tk.Label(self, text="Exersiceboi")
         label.pack(pady=10,padx=10)
 
-        button = tk.Button(self, text="Ny treningsøkt", command=lambda: controller.show_frame(Treningsokt_page))
+        button = tk.Button(self, text="Ny treningsøkt", command=lambda: controller.show_frame(TreningsoktPage))
         button.pack()
 
-        button2 = tk.Button(self, text="Treningsøkter",command=lambda: controller.show_frame(Last_N_TrainingExercisesPage))
+        button2 = tk.Button(self, text="Treningsøkter", command=lambda: controller.show_frame(LastNTrainingExercisesPage))
         button2.pack()
 
         button3 = tk.Button(self, text="Apparater",command=lambda: controller.show_frame(ApparatPage))
@@ -70,7 +70,7 @@ class LandingPage(tk.Frame):
         button10 = tk.Button(self, text="Legg til øvelse i økt", command=lambda: controller.show_frame(AddOvelseTreningsoktPage))
         button10.pack()
 
-class Treningsokt_page(tk.Frame):
+class TreningsoktPage(tk.Frame):
     '''Page for creating new treningsokts'''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
@@ -140,7 +140,7 @@ class Treningsokt_page(tk.Frame):
         self.title.config(text="Databasen har blitt oppdatert")
 
 
-class Last_N_TrainingExercisesPage(tk.Frame):
+class LastNTrainingExercisesPage(tk.Frame):
     '''
     Page for showing the last 'n' treningokts, n given by the user.
     '''
@@ -154,7 +154,7 @@ class Last_N_TrainingExercisesPage(tk.Frame):
         self.results = tk.Label(self, text="-------------------")
         self.results.pack(pady=10,padx=10)
 
-        button = tk.Button(self, text="Hent fra database", command=self.getExercises)
+        button = tk.Button(self, text="Hent fra database", command=self.get_exercises)
         button.pack()
 
         home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
@@ -163,7 +163,7 @@ class Last_N_TrainingExercisesPage(tk.Frame):
         self.num_ent = ttk.Combobox(self,values = self.num_values)
         self.num_ent.pack()
 
-    def getExercises(self):
+    def get_exercises(self):
         el = DB.get_n_okter(int(self.num_ent.get()))
         string=""
         for liste in el:
@@ -200,7 +200,7 @@ class OvelsePage(tk.Frame):
         self.ov_set_ent = tk.Entry(self)
         self.widgets.extend([ov_set, self.ov_set_ent])
 
-        ov_ap_id = tk.Label(self, text="Apparat id")
+        ov_ap_id = tk.Label(self, text="Apparat")
         self.apparat_entry = ttk.Combobox(self, values=self.all_apparat)
         self.widgets.extend([ov_ap_id, self.apparat_entry])
 
