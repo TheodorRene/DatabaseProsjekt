@@ -2,7 +2,7 @@ from database import DB
 
 class ApparatOvelseRelasjon:
     # legger til forbindelse mellom gruppeovelse og ovelse, henter fra db hvis du kun gir gruppeovelse_id
-    def __init__(self, ovelse_id, apparat_id):
+    def __init__(self, apparat_id, ovelse_id):
         self.apparat_id = apparat_id
         self.ovelse_id = ovelse_id
 
