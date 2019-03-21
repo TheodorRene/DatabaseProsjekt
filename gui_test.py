@@ -438,7 +438,7 @@ class IntervallLoggPage(tk.Frame):
             for element in query_set:
                 string += "----------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nBeskrivelse: {element[2]}\n"
-            self.results.config(text=string)
+        self.results.config(text=string)
 
 
 class PersonalRecordPage(tk.Frame):
