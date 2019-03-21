@@ -173,6 +173,7 @@ class OvelsePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.widgets = []
+        self.all_apparat = DB.project_table('apparat', 'navn')
 
         self.title = tk.Label(self, text="Registrer øvelse med apparat")
         self.widgets.append(self.title)
@@ -194,8 +195,8 @@ class OvelsePage(tk.Frame):
         self.widgets.extend([ov_set, self.ov_set_ent])
 
         ov_ap_id = tk.Label(self, text="Apparat id")
-        self.ap_id_ent = tk.Entry(self)
-        self.widgets.extend([ov_ap_id, self.ap_id_ent])
+        self.apparat_entry = ttk.Combobox(self, values=self.all_apparat)
+        self.widgets.extend([ov_ap_id, self.apparat_entry])
 
         button = tk.Button(self, text="Legg til i database", command=self.into_db)
 
@@ -205,8 +206,11 @@ class OvelsePage(tk.Frame):
         gt.pack_widgets(self.widgets)
 
     def into_db(self):
+        apparat_navn = self.apparat_entry.get()
+        apparat_id = int(DB.project_table_where('apparat_id', 'apparat', 'navn', apparat_navn))
+
         ovelse = Ovelse(self.ov_id_ent.get(),self.ov_navn_ent.get())
-        apparat_ovelse_relasjon = ApparatOvelseRelasjon(self.ov_id_ent.get(),self.ap_id_ent.get())
+        apparat_ovelse_relasjon = ApparatOvelseRelasjon(apparat_id,self.ov_id_ent.get())
         print(apparat_ovelse_relasjon)
         ovelse.save()
         apparat_ovelse_relasjon.save()
@@ -290,19 +294,21 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
         tk.Frame.__init__(self,parent)
         self.widgets = []
         self.ent = []
+        self.all_ovelsegruppe = DB.project_table('ovelsegruppe', 'navn')
+        self.all_ovelse = DB.project_table('ovelse', 'navn')
 
         self.title = tk.Label(self, text="Legg til ovelse til ovelsegruppe")
         self.widgets.append(self.title)
 
-        gruppe_id = tk.Label(self, text="Ovelsegruppe id")
-        self.gruppe_id_ent = tk.Entry(self)
-        self.widgets.extend([gruppe_id, self.gruppe_id_ent])
-        self.ent.append(self.gruppe_id_ent)
+        ovelsegruppe = tk.Label(self, text="Ovelsegruppe")
+        self.ovelsegruppe_entry = ttk.Combobox(self, values=self.all_ovelsegruppe)
+        self.widgets.extend([ovelsegruppe, self.ovelsegruppe_entry])
+        self.ent.append(self.ovelsegruppe_entry)
 
-        ov_id = tk.Label(self, text="Ovelse id")
-        self.ov_id_ent = tk.Entry(self)
-        self.widgets.extend([ov_id, self.ov_id_ent])
-        self.ent.append(self.ov_id_ent)
+        ovelse = tk.Label(self, text="Ovelse")
+        self.ovelse_entry = ttk.Combobox(self, values=self.all_ovelse)
+        self.widgets.extend([ovelse, self.ovelse_entry])
+        self.ent.append(self.ovelse_entry)
 
 
         #for el in self.widgets:
@@ -316,7 +322,13 @@ class AddOvelseToOvelsegruppePage(tk.Frame):
         home_button.pack()
 
     def into_db(self):
-        ovelse_i_ovelsegruppe = Ovelse_i_ovelsegruppe(self.ov_id_ent.get(),self.gruppe_id_ent.get())
+        ovelse_navn = self.ovelse_entry.get()
+        ovelse_id = int(DB.project_table_where('ovelse_id', 'ovelse', 'navn', ovelse_navn))
+
+        ovelsegruppe_navn = self.ovelsegruppe_entry.get()
+        ovelsegruppe_id = int(DB.project_table_where('ovelsegruppe_id', 'ovelsegruppe', 'navn', ovelsegruppe_navn))
+
+        ovelse_i_ovelsegruppe = Ovelse_i_ovelsegruppe(ovelse_id,ovelsegruppe_id)
         ovelse_i_ovelsegruppe.save()
         self.title.config(text="Databasen har blitt oppdatert")
         gt.empty_ent(self.ent)
@@ -429,7 +441,7 @@ class IntervallLoggPage(tk.Frame):
             for element in query_set:
                 string += "----------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nBeskrivelse: {element[2]}\n"
-            self.results.config(text=string)
+        self.results.config(text=string)
 
 
 class PersonalRecordPage(tk.Frame):
