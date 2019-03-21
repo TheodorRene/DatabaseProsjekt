@@ -15,8 +15,9 @@ class Ovelse_i_ovelsegruppe:
     # lagrer objektendringene i databasen
     def save(self):
         con = DB.get_connection()
+        #con.execute("PRAGMA foreign_keys = ON") #Enable foreign keys
         cursor = con.cursor()
-        db_req = f"INSERT INTO ovelse_i_ovelsegruppe VALUES ({self.ovelse_id},'{self.ovelsegruppe_id}');"
+        db_req = f"INSERT INTO ovelse_ovelsegruppe_relasjon VALUES ({self.ovelse_id},'{self.ovelsegruppe_id}');"
         cursor.execute(db_req)
         con.commit()
         con.close()
