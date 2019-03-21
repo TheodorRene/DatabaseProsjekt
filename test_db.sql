@@ -10,6 +10,7 @@ INSERT INTO person VALUES (3,"Andreas");
 INSERT INTO ovelse_uten_apparat VALUES (1,"Du dytter jorda nedover");
 INSERT INTO ovelse_uten_apparat VALUES (2,"Du dytter luft nedover");
 INSERT INTO ovelse_uten_apparat VALUES (3,"Du spinner");
+
 INSERT INTO ovelse_uten_apparat VALUES (7,"Du gjør 2010-trenden 'planking' - bare du trener!");
 
 INSERT INTO apparat VALUES(1, "Benk", "Benk som kan flyttes og justere vinkel");
@@ -46,10 +47,15 @@ INSERT INTO ovelse VALUES (9,"Lat pull wide 50/4");
 INSERT INTO ovelse VALUES (10,"Pull up 5/5");
 INSERT INTO ovelse VALUES (11,"Chin up 5/5");
 
+
 INSERT INTO ovelsegruppe VALUES (1,"Ryggøvelser");
 INSERT INTO ovelsegruppe VALUES (2,"Bryst");
 INSERT INTO ovelsegruppe VALUES (3,"Triceps");
 INSERT INTO ovelsegruppe VALUES (4,"Koordinasjon");
+
+INSERT INTO ovelse VALUES (1,"Pushups");
+INSERT INTO ovelse VALUES (2,"Situps");
+INSERT INTO ovelse VALUES (3,"Backflip");
 
 INSERT INTO ovelse_ovelsegruppe_relasjon VALUES (1, 2);
 INSERT INTO ovelse_ovelsegruppe_relasjon VALUES (1, 3);
