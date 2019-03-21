@@ -15,7 +15,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage]
+        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -55,6 +55,8 @@ class LandingPage(tk.Frame):
         button7 = tk.Button(self, text="Finn øvelser i gruppeøvelse", command=lambda: controller.show_frame(RetrieveOvelseInOvelsegruppePage))
         button7.pack()
 
+        button8 = tk.Button(self, text="Intervallogg", command=lambda: controller.show_frame(IntervallLoggPage))
+        button8.pack()
 
 
 class Treningsokt_page(tk.Frame):
@@ -365,6 +367,54 @@ class RetrieveOvelseInOvelsegruppePage(tk.Frame):
 
 
 
+
+
+class IntervallLoggPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.widgets = []
+        self.ent = []
+        self.all_ovelse = []
+
+        self.title = tk.Label(self, text="Se intervallogg")
+        self.widgets.append(self.title)
+
+        # HJELP MED ØVELSE DROP-DOWN
+        t_id = tk.Label(self, text="Øvelse")
+        t_id_ent = tk.Entry(self)
+        self.widgets.extend([t_id,t_id_ent])
+        self.ent.append(t_id_ent)
+
+        #dato start
+        t_dato_start = tk.Label(self, text="Intervall start: (YYYY-MM-DD")
+        t_dato_start_ent = tk.Entry(self)
+        self.widgets.extend([t_dato_start,t_dato_start_ent])
+        self.ent.append(t_dato_start_ent)
+
+        # dato end
+        t_dato_end = tk.Label(self, text="Intervall slutt: (YYYY-MM-DD")
+        t_dato_end_ent = tk.Entry(self)
+        self.widgets.extend([t_dato_end, t_dato_end_ent])
+        self.ent.append(t_dato_end_ent)
+
+        gt.pack_widgets(self.widgets)
+
+        but = tk.Button(self, text='Søk til i database', width=25, command=self.into_db)
+        self.widgets.append(but)
+
+        log_button = tk.Button(self, text="Se logg", command=lambda: controller.show_frame(SeIntervallLoggPage))
+        log_button.pack()
+
+        home_button = tk.Button(self, text="Gå tilbake", command=lambda: controller.show_frame(LandingPage))
+        home_button.pack()
+
+
+    def into_db(self):
+        pass
+
+
+class SeIntervallLoggPage:
+    pass
 
 
 #viktig mainloop

@@ -9,6 +9,10 @@ class DB(ABC):
 
     @abstractmethod
     def get_connection():
+        '''
+        Makes a connection to a database
+        :return: Returns a connection variable to the database
+        '''
         try:
             global TRENINGDB
             con = sqlite3.connect(TRENINGDB)
@@ -50,6 +54,11 @@ class DB(ABC):
     # Retrieve N treningsokter from DB. 
     @abstractmethod
     def get_n_okter(n):
+        '''
+        Get information about the n previous treningsokts
+        :param n: Number of treningsokt wanted
+        :return: Returns the query result
+        '''
         con = DB.get_connection()
         cursor = con.cursor()
         db_req = f"SELECT dato,varighet,personlig_form,prestasjon,navn FROM treningsokt NATURAL JOIN treningssenter ORDER BY dato DESC LIMIT {n} ;"
@@ -85,6 +94,37 @@ class DB(ABC):
         return result
 
     @abstractmethod
+    def ovelse_log_in_interval(ovelse_id, start, end):
+        '''
+        See all entries with a given ovelse, that happened between 'start' and 'end'
+        :param ovelse_id: ID of the specified ovelse
+        :param start: Start of time interval
+        :param end: End of time interval
+        :return: Returns the query result
+        '''
+        format_start = f"Datetime('{start}')"
+        format_end = f"Datetime('{end}')"
+        con = DB.get_connection()
+        cursor = con.cursor()
+
+        # SQL query that connects ovelse_pa_apparat with treningsokt
+        table_pa_apparat = "ovelse_pa_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
+
+        # Constraint that make sure the ovelse is in a specified interval
+        constraint = f"(ovelse_id={ovelse_id} AND dato >= {format_start} AND dato <= {format_end})"
+
+        query_pa_apparat = f"SELECT * FROM {table_pa_apparat} WHERE {constraint}"
+        ovelse_pa_apparat = cursor.execute(query_pa_apparat).fetchall()
+        if ovelse_pa_apparat:
+            return ovelse_pa_apparat
+
+        # SQL query that connects ovelse_uten_apparat with treningsokt
+        table_uten_apparat = "ovelse_uten_apparat NATURAL JOIN ovelse NATURAL JOIN ovelse_treningsokt_relasjon NATURAL JOIN treningsokt"
+
+        query_uten_apparat = f"SELECT * FROM {table_uten_apparat} WHERE {constraint}"
+        ovelse_uten_apparat = cursor.execute(query_uten_apparat).fetchall()
+        return ovelse_uten_apparat
+
     def get_ovelsegrupper():
         con = DB.get_connection()
         cursor = con.cursor()
@@ -124,5 +164,3 @@ if __name__=="__main__":
     #print(treningssenter.navn)
     #print(DB.instance_exists(treningssenter))
     pass
-
-
