@@ -15,7 +15,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage]
+        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -48,6 +48,14 @@ class LandingPage(tk.Frame):
 
         button5 = tk.Button(self, text="Registrer gruppeøvelse", command=lambda: controller.show_frame(RegisterOvelsegruppePage))
         button5.pack()
+
+        button6=tk.Button(self, text="Legg øvelse til gruppeøvelse", command=lambda: controller.show_frame(AddOvelseToOvelsegruppePage))
+        button6.pack()
+
+        button7 = tk.Button(self, text="Finn øvelser i gruppeøvelse", command=lambda: controller.show_frame(RetrieveOvelseInOvelsegruppePage))
+        button7.pack()
+
+
 
 class Treningsokt_page(tk.Frame):
     def __init__(self, parent, controller):
@@ -266,7 +274,102 @@ class RegisterOvelsegruppePage(tk.Frame):
         ovelsegruppe.save()
         self.title.config(text="Databasen har blitt oppdatert")
         #gt.empty_ent(self.ent)
+
+class AddOvelseToOvelsegruppePage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.widgets = []
+        self.ent = []
+
+        self.title = tk.Label(self, text="Legg til ovelse til ovelsegruppe")
+        self.widgets.append(self.title)
+
+        gruppe_id = tk.Label(self, text="Ovelsegruppe id")
+        self.gruppe_id_ent = tk.Entry(self)
+        self.widgets.extend([gruppe_id, self.gruppe_id_ent])
+        self.ent.append(self.gruppe_id_ent)
+
+        ov_id = tk.Label(self, text="Ovelse id")
+        self.ov_id_ent = tk.Entry(self)
+        self.widgets.extend([ov_id, self.ov_id_ent])
+        self.ent.append(self.ov_id_ent)
+
+
+        #for el in self.widgets:
+        #    el.pack()
+        gt.pack_widgets(self.widgets)
+
+        button = tk.Button(self, text="Legg til i ovelsegruppe", command=self.into_db)
+        button.pack()
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        home_button.pack()
+
+    def into_db(self):
+        ovelse_i_ovelsegruppe = Ovelse_i_ovelsegruppe(self.ov_id_ent.get(),self.gruppe_id_ent.get())
+        ovelse_i_ovelsegruppe.save()
+        self.title.config(text="Databasen har blitt oppdatert")
+        gt.empty_ent(self.ent)
+
+class RetrieveOvelseInOvelsegruppePage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.widgets = []
+
+        #self.ovelsegrupper=["Ben","Armer", "Hode"]
+        self.ovelsegrupper = [el[0] for el in DB.get_ovelsegrupper()]
+        ovelsegruppe_navn=DB.get_ovelsegrupper
+
+        #for row in ovelsegruppe_navn:                      #Vil ikke iterere over en fetchall, hvordan får jeg liste med navn da?
+           # self.ovelsegrupper.append(row[0])
+
+        self.title = tk.Label(self, text="Velg ovelsegruppe")
+        self.widgets.append(self.title)
+
+        self.results = tk.Label(self, text="-------------------")
+        self.results.pack(pady=10, padx=10)
+
+
+        """gruppe_id = tk.Label(self, text="Ovelsegruppe id")
+        self.gruppe_id_ent = tk.Entry(self)
+        self.widgets.extend([gruppe_id, self.gruppe_id_ent])"""
+
+        self.name_ent = ttk.Combobox(self, values=self.ovelsegrupper)
+        self.name_ent.pack()
+
+
+
+        button = tk.Button(self, text="Hent fra database", command=self.get_ovelser)
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        self.widgets.extend([button, home_button])
+
+        gt.pack_widgets(self.widgets)
+    #def get_id_ovelsegruppe(self):
+        #el=DB.get_id_of_ovelsegruppe(self.name_ent.get())
+        #return el #Kan man returnere noe her?
+
+    def get_ovelser(self):
+        ovelsegruppe_id=DB.get_id_of_ovelsegruppe(self.name_ent.get())
+        print(ovelsegruppe_id)
+        ovelsegrupper=DB.get_ovelser_in_ovelsegruppe(ovelsegruppe_id)
+        print(ovelsegrupper)
+         #Må endre sånn at man skaffer riktig info
+        string = "Ovelser:\n"
+        for liste in ovelsegrupper:
+            string += f"{liste}\n"
+        self.results.config(text=string)
+
+
+
+
+
+
+
+
 #viktig mainloop
+
+
 app = main()
 app.mainloop()
 

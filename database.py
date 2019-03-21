@@ -59,6 +59,40 @@ class DB(ABC):
         result = cursor.execute(db_req).fetchone()
         return result
 
+    @abstractmethod
+    def get_ovelsegrupper():
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req = f"SELECT navn,ovelsegruppe_id FROM ovelsegruppe"  # WHERE {gruppe_id}={1}
+        result = cursor.execute(db_req).fetchall()
+        con.close()
+        return result
+
+    @abstractmethod
+    def get_id_of_ovelsegruppe(navn):
+        con = DB.get_connection()
+        cursor = con.cursor()
+        db_req = f"SELECT ovelsegruppe_id FROM ovelsegruppe WHERE navn='{navn}'; "  # WHERE {gruppe_id}={1}
+        print(navn)
+        result = cursor.execute(db_req).fetchone()[0]
+        con.close()
+        return result
+
+    @abstractmethod
+    def get_ovelser_in_ovelsegruppe(gruppe_id):
+        con = DB.get_connection()
+        cursor = con.cursor()
+        print(gruppe_id)
+        db_req = f"SELECT ovelse_id FROM ovelse_i_ovelsegruppe NATURAL JOIN ovelsegruppe WHERE ovelsegruppe_id={gruppe_id};"
+        result = [el[0] for el in cursor.execute(db_req).fetchall()]
+        liste = []
+        print("Ovelser fra øvelssesgrupe:\n" + str(result))
+        for el in result:
+            db_req_2= f"SELECT navn FROM ovelse WHERE ovelse_id={el};"
+            liste.append(cursor.execute(db_req_2).fetchone()[0])
+        con.close()
+        return liste
+
 
 if __name__=="__main__":
     treningssenter = Treningssenter(10, navn="Yoboi")
