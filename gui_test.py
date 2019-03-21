@@ -15,7 +15,7 @@ class main(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage]
+        pages = [LandingPage, Treningsokt_page, Last_N_TrainingExercisesPage, ApparatPage, OvelsePage, RegisterOvelsegruppePage, AddOvelseToOvelsegruppePage, RetrieveOvelseInOvelsegruppePage, IntervallLoggPage,PersonalRecordPage]
         for F in pages:
             frame = F(container,self)
             self.frames[F] = frame
@@ -58,6 +58,8 @@ class LandingPage(tk.Frame):
         button8 = tk.Button(self, text="Intervallogg", command=lambda: controller.show_frame(IntervallLoggPage))
         button8.pack()
 
+        button9 = tk.Button(self, text="Personlig rekord", command=lambda: controller.show_frame(PersonalRecordPage))
+        button9.pack()
 
 class Treningsokt_page(tk.Frame):
     def __init__(self, parent, controller):
@@ -363,12 +365,6 @@ class RetrieveOvelseInOvelsegruppePage(tk.Frame):
         self.results.config(text=string)
 
 
-
-
-
-
-
-
 class IntervallLoggPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
@@ -422,7 +418,7 @@ class IntervallLoggPage(tk.Frame):
                 string += f"---------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nAntall kilo: {element[2]}\nAntall sets: {element[3]}\n"
 
-        else
+        else:
             for element in query_set:
                 string += "----------------\n"
                 string += f"Dato: {element[0]}\nNavn: {element[1]}\nBeskrivelse: {element[2]}\n"
@@ -432,6 +428,35 @@ class IntervallLoggPage(tk.Frame):
 class SeIntervallLoggPage:
     pass
 
+class PersonalRecordPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+
+        label = tk.Label(self, text="Din personlige rekord")
+        label.pack(pady=10,padx=10)
+        self.all_ovelse = DB.project_table('ovelse', 'navn')
+
+        t_id = tk.Label(self, text="Øvelse")
+        self.t_form_comb = ttk.Combobox(self, values=self.all_ovelse)
+        self.t_form_comb.pack()
+
+        self.results = tk.Label(self, text="-------------------")
+        self.results.pack(pady=10,padx=10)
+
+        button = tk.Button(self, text="Hent fra database", command=self.getExercises)
+        button.pack()
+
+        home_button = tk.Button(self, text="Gå til tilbake", command=lambda: controller.show_frame(LandingPage))
+        home_button.pack()
+
+
+    def getExercises(self):
+        ex = DB.getPersonalRecord(self.t_form_comb.get())
+        try:
+            string= "Ant Kilo: " + str(ex[1]) + "\nAnt set:" + str(ex[2]) + "\nNavn: " + ex[3]
+        except Exception:
+            string = ex
+        self.results.config(text=string)
 
 #viktig mainloop
 

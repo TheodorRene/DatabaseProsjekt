@@ -70,31 +70,37 @@ class DB(ABC):
         return result
 
     @abstractmethod
-    def getPersonalRecordApparat(ovelse):
-        con = DB.get_connection()
-        cursor = con.cursor()
-        db_req= f"SELECT ovelse_id,MAX(antall_kilo*antall_set) FROM ovelse_pa_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%';"
-        result = cursor.execute(db_req).fetchall()
-        con.close()
-        return result
-
-    @abstractmethod
     def getPersonalRecord(ovelse):
         con = DB.get_connection()
         cursor = con.cursor()
-        db_req= f"SELECT * FROM ovelse_uten_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%';"
-        result = cursor.execute(db_req).fetchall()
+        if DB.has_apparat(ovelse):
+            db_req= f"SELECT ovelse_id,MAX(antall_kilo*antall_set) FROM ovelse_pa_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%';"
+            pk = cursor.execute(db_req).fetchall()[0][0]
+            db_req_2 = f"SELECT * FROM ovelse_pa_apparat NATURAL JOIN ovelse WHERE ovelse_id={int(pk)};"
+            result = cursor.execute(db_req_2).fetchone()
+
+        else:
+            db_req= f"SELECT * FROM ovelse_uten_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%';"
+            result = cursor.execute(db_req).fetchall()
         con.close()
         return result
 
-    @abstractmethod
     # returnerer objektet med gitt pk dersom det finnes, returnerer None ellers
+    @abstractmethod
     def instance_exists(instance):
         con = DB.get_connection()
         cursor = con.cursor()
         db_req = f"SELECT * FROM {instance} WHERE {instance.pk_field}={instance.pk}"
         result = cursor.execute(db_req).fetchone()
         return result
+
+    @abstractmethod
+    def has_apparat(ovelse):
+        con = DB.get_connection()
+        cursor = con.cursor()
+        query_pa_apparat = f"SELECT * FROM ovelse_pa_apparat NATURAL JOIN ovelse WHERE navn LIKE '{ovelse}%'"
+        has_apparat = cursor.execute(query_pa_apparat).fetchall()
+        return bool(has_apparat)
 
     @abstractmethod
     def ovelse_log_in_interval(ovelse_id, start, end):
@@ -172,9 +178,9 @@ class DB(ABC):
         con = DB.get_connection()
         cursor = con.cursor()
         db_req = f"SELECT {project_cols_string} FROM {table};"
-        result = cursor.execute(db_req).fetchall()
+        result = [el[0] for el in cursor.execute(db_req).fetchall()]
         con.close()
-        print(result)
+        print("your combobbox" + str(result) + "end")
         return result
 
     @abstractmethod
